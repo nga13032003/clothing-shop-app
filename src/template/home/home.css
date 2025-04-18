@@ -1,0 +1,328 @@
+/* Layout styles */
+.layout {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  /* Header styles */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #000; /* Text color for the header */
+    height: 80px;
+    padding-inline: 48px;
+    line-height: 80px;
+    background-color: #e9e9e9; /* Set background to light gray */
+    position: fixed;
+    width: 100%;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+  }
+  
+  .logo {
+    display: flex;
+    align-items: center;
+    max-width: 200px;
+    overflow: hidden;
+  }
+  
+  .logo img {
+    width: 100px;
+    height: auto;
+    margin-right: 10px;
+  }
+  
+  .logo span {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #000;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  
+  .nav-links {
+    list-style: none;
+    display: flex;
+    gap: 20px;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .nav-links li {
+    font-weight: bold;
+    font-size: 18px;
+    color: #000;
+  }
+  
+  .nav-links li:hover {
+    text-decoration: underline;
+  }
+  
+  .actions {
+    display: flex;
+    gap: 20px;
+  }
+  
+  .actions .icon {
+    font-size: 20px;
+    color: #000;
+  }
+  
+  .actions .hotline {
+    font-size: 18px;
+    font-weight: bold;
+    color: #000;
+  }
+  
+  /* Content styles */
+  .content {
+    text-align: center;
+    min-height: calc(100vh - 128px); /* Subtract header height */
+    color: #000;
+    background-color: #fff; /* Set background to white */
+    padding-top: 80px; /* Added space for fixed header */
+    z-index: 1;
+  }
+  
+  /* Banner Carousel styles */
+  .banner-carousel {
+    position: relative;
+    width: 100%;
+    height: 100vh; /* Full height for the banner */
+    overflow: hidden;
+  }
+  
+  .banner-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensure the image covers the entire viewport */
+  }
+  
+  /* Banner Content Styles */
+  .banner-content {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+  
+  /* Content Item Styles */
+  .content-item {
+    display: flex;
+    /* align-items: center; */
+    justify-content: space-between;
+    width: 100%;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+  
+  .content-item.reverse {
+    flex-direction: row-reverse;
+  }
+  
+  .content-image {
+    width: 38%;
+    height: auto;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+  
+.content-text {
+  width: 45%;
+  padding: 15px;
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-size: 18px;
+  line-height: 1.8;
+  text-align: justify;
+  color: #2b2b2b;
+}
+
+
+  
+  .content-text h3 {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  
+  .content-text p {
+    font-size: 16px;
+    line-height: 1.5;
+    color: #333;
+  }
+  
+  /* Footer styles */
+  .footer {
+    text-align: center;
+    color: #000;
+    background-color: #e9e9e9;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+  
+  .footer .column {
+    flex: 1;
+    padding: 0 10px;
+  }
+  
+  .footer .column h3 {
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  
+  .footer .column p {
+    margin: 5px 0;
+    font-size: 14px;
+  }
+  
+  .footer .social-links {
+    display: flex;
+    gap: 15px;
+  }
+  
+  .footer .social-links a {
+    text-decoration: none;
+    color: #000;
+    font-size: 20px;
+  }
+  
+  .footer .address {
+    font-size: 14px;
+  }
+  
+  .footer .map {
+    margin-top: 10px;
+  }
+  
+  /* Styling for Google Map iframe */
+  .footer .map iframe {
+    width: 100%;
+    height: 150px;
+    border: none;
+  }
+  
+  /* Media Query for mobile responsiveness */
+  @media (max-width: 768px) {
+    /* Header */
+    .header {
+      padding-inline: 24px; /* Reduced padding */
+    }
+  
+    .nav-links {
+      flex-direction: column;
+      gap: 10px;
+      align-items: center; /* Center the navigation items */
+    }
+  
+    /* Content */
+    .content-item {
+      flex-direction: column; /* Stack items vertically */
+      align-items: center;
+    }
+  
+    .content-item.reverse {
+      flex-direction: column-reverse;
+    }
+  
+    .content-image {
+      width: 100%; /* Full width for images */
+      margin-bottom: 15px;
+    }
+  
+    .content-text {
+      width: 100%; /* Full width for text */
+      text-align: center; /* Center text */
+    }
+  
+    /* Banner */
+    .banner-carousel {
+      height: 60vh; /* Adjust the height of the banner on small screens */
+    }
+  
+    .banner-image {
+      object-fit: contain; /* Make the image fit within the viewport */
+    }
+  
+    /* Footer */
+    .footer {
+      flex-direction: column;
+      gap: 20px;
+    }
+  
+    .footer .column {
+      padding: 10px 0; /* Add padding to footer columns */
+    }
+  
+    .footer .social-links {
+      gap: 10px; /* Reduce gap in social links */
+    }
+  
+    .footer .map iframe {
+      height: 120px; /* Reduce iframe height for mobile */
+    }
+  }
+  
+  /* For larger screens */
+  @media (min-width: 769px) {
+    .footer .column {
+      padding: 20px; /* Adjust padding for larger screens */
+    }
+    .content-item.reverse2 {
+        flex-direction: row-reverse;
+
+      }
+      
+      .content-image2 {
+        width: 50%;
+        height: auto;
+        float:right;
+        object-fit: cover;
+        border-radius: 8px;
+      }
+      
+      .content-text {
+        width: 45%;
+        padding: 15px;
+      }
+      
+      .content-text h3 {
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 10px;
+      }
+      
+      .content-text p {
+        font-size: 16px;
+        line-height: 1.5;
+        color: #333;
+      }
+      .actions {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        font-family: 'Be Vietnam Pro', sans-serif;
+      }
+      
+      .actions .hotline {
+        font-size: 14px;
+        color: #444;
+      }
+      
+      .actions .hotline strong {
+        color: #d7263d;
+        font-weight: 600;
+      }
+     
+  }
+  
