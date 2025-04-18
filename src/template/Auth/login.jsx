@@ -4,6 +4,7 @@ import { GoogleLogin } from '@react-oauth/google';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { Logo } from '../../assets';
 import { login } from '../../assets';
+import { Link } from 'react-router-dom'; // Thêm dòng này
 import './login.css'; 
 
 const { Title } = Typography;
@@ -27,8 +28,8 @@ const Login = () => {
     <div className="login-container">
       <img src={login} alt="Background" className="login-bg" />
       <div className="login-box">
-      <div style={{ display: 'flex', justifyContent: 'center'}}>
-        <img src={Logo} alt="Logo" style={{ height: '80px', width: 'auto' }} />
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
+          <img src={Logo} alt="Logo" style={{ height: '80px', width: 'auto' }} />
         </div>
         <Title level={2} style={{ textAlign: 'center' }}>
           Đăng nhập
@@ -51,6 +52,10 @@ const Login = () => {
             <Input.Password prefix={<LockOutlined />} placeholder="Nhập mật khẩu" />
           </Form.Item>
 
+          <div style={{ textAlign: 'right', marginBottom: '12px' }}>
+            <Link to="/forgot-password">Quên mật khẩu?</Link>
+          </div>
+
           <Form.Item>
             <Button type="primary" htmlType="submit" block>
               Đăng nhập
@@ -65,6 +70,11 @@ const Login = () => {
             onSuccess={handleGoogleSuccess}
             onError={handleGoogleError}
           />
+        </div>
+
+        <div style={{ textAlign: 'center', marginTop: 16 }}>
+          <span>Bạn chưa có tài khoản? </span>
+          <Link to="/register">Đăng ký</Link>
         </div>
       </div>
     </div>
