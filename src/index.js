@@ -8,6 +8,7 @@ import App from './template/home/home';
 import Login from './template/Auth/login';
 import Register from './template/Auth/register';
 import ForgotPassword from './template/Auth/forgotPassword';
+import SanPhamMenu from './template/Merchants/goods';
 
 // Thay YOUR_GOOGLE_CLIENT_ID bằng clientId thật của bạn
 const root = createRoot(document.getElementById('root'));
@@ -21,6 +22,7 @@ root.render(
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/loai-san-pham" element={<SanPhamMenu/>}/>
         </Routes>
       </BrowserRouter>
     </GoogleOAuthProvider>

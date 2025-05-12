@@ -11,6 +11,8 @@ const App = () => {
   const { Meta } = Card;
   const [currentBanner, setCurrentBanner] = useState(0);
   const banners = [banner1, banner2, banner3];
+  
+
 
   // Change the banner every 5 seconds
   useEffect(() => {
@@ -34,7 +36,7 @@ const App = () => {
         {/* Navigation Links */}
         <ul className="nav-links">
           <li>Trang chủ</li>
-          <li>Sản phẩm</li>
+          <li><Link to="/loai-san-pham">Sản phẩm</Link></li>
           <li>Tin tức</li>
           <li>Liên hệ</li>
           <li>Giới thiệu</li>
