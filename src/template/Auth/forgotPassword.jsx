@@ -4,6 +4,7 @@ import { MailOutlined } from '@ant-design/icons';
 import { Logo } from '../../assets';
 import { login } from '../../assets';
 import './login.css';
+import { Link } from 'react-router-dom';
 
 const { Title } = Typography;
 
@@ -18,7 +19,7 @@ const ForgotPassword = () => {
       <img src={login} alt="Background" className="login-bg" />
       <div className="login-box">
         <div style={{ display: 'flex', justifyContent: 'center' }}>
-          <img src={Logo} alt="Logo" style={{ height: '80px', width: 'auto' }} />
+        <Link to="/">  <img src={Logo} alt="Logo" style={{ height: '80px', width: 'auto' }} /></Link>
         </div>
 
         <Title level={2} style={{ textAlign: 'center' }}>

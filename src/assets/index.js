@@ -11,6 +11,7 @@ import QA3 from './images/QA3.jpg'
 import facebook from './icons/facebook.png'
 import instagram from './icons/instagram.png'
 import login from './images/login.jpg'
+import cart from './icons/cart.png'
 
 export{
     Logo,
@@ -25,5 +26,6 @@ export{
     QA3,
     facebook,
     instagram,
-    login
+    login,
+    cart
 }
