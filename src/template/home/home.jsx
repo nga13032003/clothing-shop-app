@@ -62,7 +62,7 @@ const App = ({ children }) => {
         {/* Menu desktop (ẩn khi mobile, hiện khi lớn hơn) */}
         <ul className="nav-links">
           <li><Link to="/">Trang chủ</Link></li>
-          <li><Link to="/product">Sản phẩm</Link></li>
+          <li><Link to="/loai-san-pham">Sản phẩm</Link></li>
           <li><Link to="/news">Tin tức</Link></li>
           <li><Link to="/contact">Liên hệ</Link></li>
           <li><Link to="/about">Giới thiệu</Link></li>
