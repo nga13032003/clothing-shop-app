@@ -1,156 +1,109 @@
 import React, { useEffect, useState } from 'react';
 import { getAllLoaiSanPham } from '../../api/loaiSanPhamApi';
-import { getSanPhamTheoLoaiSP } from '../../api/apiSanPham';
-import { getChiTietSanPhamTheoMaSP } from '../../api/chiTietSanPhamApi';
+import {getSanPhamTheoLoaiSP} from '../../api/apiSanPham'
+import { getBienTheTheoMaSP } from '../../api/chiTietSanPhamApi';
 
-const PAGE_SIZE = 6;
-
-const SanPhamMenu = () => {
-  const [loaiSPList, setLoaiSPList] = useState([]);
-  const [sanPhamList, setSanPhamList] = useState([]);
-  const [hoveredLoaiId, setHoveredLoaiId] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1);
+const SanPhamPage = () => {
+  const [loaiSanPhamList, setLoaiSanPhamList] = useState([]);
+  const [sanPhamTheoLoai, setSanPhamTheoLoai] = useState({});
+  const [currentPages, setCurrentPages] = useState({});
 
   useEffect(() => {
-    const fetchLoaiSP = async () => {
-      try {
-        const loais = await getAllLoaiSanPham();
-        setLoaiSPList(loais);
-      } catch (error) {
-        console.error('Lỗi khi lấy loại sản phẩm:', error);
-      }
+    const fetchData = async () => {
+      const loaiList = await getAllLoaiSanPham();
+      setLoaiSanPhamList(loaiList);
+
+      loaiList.forEach(async (loai) => {
+        await fetchSanPham(loai.maLoai, 1);
+      });
     };
-    fetchLoaiSP();
+
+    fetchData();
   }, []);
 
-  const handleLoaiClick = async (maLoai) => {
-    setHoveredLoaiId(maLoai);
-    setCurrentPage(1);
-  
-    try {
-      const sanPhams = await getSanPhamTheoLoaiSP(maLoai);
-  
-      const sanPhamsWithChiTiet = await Promise.all(
-        sanPhams.map(async (sp) => {
-          try {
-            const chiTiet = await getChiTietSanPhamTheoMaSP(sp.maSanPham);
-            return {
-              ...sp,
-              hinhAnhUrl: chiTiet.hinhAnh,
-              gia: chiTiet.gia,
-              soLuong: chiTiet.soLuong
-            };
-          } catch {
-            // Trả về null nếu không có chi tiết
-            return null;
-          }
-        })
-      );
-  
-      // Lọc bỏ sản phẩm null (không có chi tiết)
-      const filteredSanPhams = sanPhamsWithChiTiet.filter((sp) => sp !== null);
-  
-      setSanPhamList(filteredSanPhams);
-    } catch (error) {
-      setSanPhamList([]);
-    }
-  };
+  const fetchSanPham = async (maLoai, page) => {
+  const res = await getSanPhamTheoLoaiSP(maLoai, page);
 
-  const paginatedProducts = sanPhamList.slice(
-    (currentPage - 1) * PAGE_SIZE,
-    currentPage * PAGE_SIZE
-  );
-  const totalPages = Math.ceil(sanPhamList.length / PAGE_SIZE);
+  const sanPhamsWithGia = [];
+
+  // Duyệt từng sp, lấy biến thể, nếu có thì push vào mảng mới
+  for (const sp of res) {
+    try {
+      const bienThe = await getBienTheTheoMaSP(sp.maSP);
+
+      // Nếu có biến thể (mảng không rỗng)
+      if (bienThe.length > 0) {
+        sanPhamsWithGia.push({
+          ...sp,
+          giaBan: bienThe[0].giaBan,
+          hinhAnh: bienThe[0].hinhAnh,
+        });
+      }
+      // Nếu bienThe rỗng thì không thêm sp này
+    } catch (error) {
+      // Nếu lỗi (ví dụ 404 biến thể ko tồn tại), bỏ qua sản phẩm này
+      // Không cần ném lỗi ra nữa
+      console.warn(`Không có biến thể cho sản phẩm mã ${sp.maSP}, bỏ qua.`);
+    }
+  }
+
+  setSanPhamTheoLoai((prev) => ({
+    ...prev,
+    [maLoai]: sanPhamsWithGia,
+  }));
+
+  setCurrentPages((prev) => ({
+    ...prev,
+    [maLoai]: page,
+  }));
+};
 
   return (
-    <div className="p-6 max-w-screen-xl mx-auto">
-      <h2 className="text-2xl font-bold mb-6">Danh mục sản phẩm</h2>
-
-      <div className="flex flex-wrap gap-4 border-b pb-3 mb-6">
-  {loaiSPList.map((loai) => (
-    <button
-      key={loai.maLoaiSP}
-      onClick={() => handleLoaiClick(loai.maLoaiSP)}
-      className={`px-5 py-2 text-base font-medium rounded-full border transition duration-200
-        ${
-          hoveredLoaiId === loai.maLoaiSP
-            ? 'bg-blue-600 text-white border-blue-600'
-            : 'bg-white text-gray-700 hover:bg-blue-100 border-gray-300'
-        }`}
-    >
-      {loai.tenLoaiSP}
-    </button>
-  ))}
-</div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-        {paginatedProducts.length === 0 ? (
-          <div className="col-span-3 text-gray-500 italic">
-            Chọn một loại sản phẩm để xem danh sách.
+    <div className="flex w-full max-w-[1440px] mx-auto">
+      {/* Sidebar */}
+      <aside className="w-1/4 p-4 border-r border-gray-300">
+        {loaiSanPhamList.map((loai) => (
+          <div key={loai.maLoai} className="mb-4">
+            <p className="text-lg font-semibold lowercase">{loai.parentId}</p>
+            <p className="ml-2">{loai.tenLoai}</p>
           </div>
-        ) : (
-          paginatedProducts.map((sp) => (
-            <div
-              key={sp.maSanPham}
-              className="border rounded-lg shadow-sm overflow-hidden hover:shadow-md transition duration-200"
-            >
-              <img
-                src={ sp.hinhAnh ? `https://localhost:7265/images/${sp.hinhAnh}` : 'https://via.placeholder.com/300x200?text=No+Image'}
-                alt={sp.tenSanPham}
-                className="w-full h-40 object-cover"
-              />
-              <div className="p-4">
-                <h3 className="font-semibold text-base mb-1">{sp.tenSanPham}</h3>
-                <p className="text-sm text-gray-500 mb-1">Mã: {sp.maSanPham}</p>
-                {sp.gia !== undefined && (
-                  <p className="text-sm text-red-600 font-medium">Giá: {sp.gia.toLocaleString()} đ</p>
-                )}
-                {sp.soLuong !== undefined && (
-                  <p className="text-sm text-gray-500">Tồn kho: {sp.soLuong}</p>
-                )}
-              </div>
-            </div>
-          ))
-        )}
-      </div>
+        ))}
+      </aside>
 
-      {totalPages > 1 && (
-        <div className="mt-6 flex justify-center items-center space-x-2">
-        <button
-          onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
-          disabled={currentPage === 1}
-          className="px-3 py-1 border rounded hover:bg-gray-200 disabled:opacity-50"
-        >
-          &laquo;
-        </button>
-        {[...Array(totalPages)].map((_, idx) => {
-          const page = idx + 1;
-          return (
-            <button
-              key={page}
-              onClick={() => setCurrentPage(page)}
-              className={`px-4 py-1 rounded border transition duration-200 ${
-                page === currentPage
-                  ? 'bg-blue-600 text-white border-blue-600'
-                  : 'bg-white text-gray-700 hover:bg-gray-200 border-gray-300'
-              }`}
-            >
-              {page}
-            </button>
-          );
-        })}
-        <button
-          onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
-          disabled={currentPage === totalPages}
-          className="px-3 py-1 border rounded hover:bg-gray-200 disabled:opacity-50"
-        >
-          &raquo;
-        </button>
-      </div>
-      
-      )}
+      {/* Main */}
+      <main className="w-3/4 p-4">
+        {loaiSanPhamList.map((loai) => (
+          <div key={loai.maLoai} className="mb-10">
+            <h2 className="text-xl font-bold mb-2">{loai.tenLoai}</h2>
+            <div className="grid grid-cols-3 gap-4">
+              {(sanPhamTheoLoai[loai.maLoai] || []).slice(0, 3).map((sp) => (
+                <div key={sp.maSP} className="border rounded p-3 shadow">
+                  <img src={sp.hinhAnh} alt={sp.tenSP} className="w-full h-60 object-cover mb-2" />
+                  <p className="font-medium">{sp.tenSP}</p>
+                  <p className="text-red-500 font-bold">{sp.giaBan.toLocaleString()}đ</p>
+                </div>
+              ))}
+            </div>
+            {/* Pagination */}
+            <div className="mt-2">
+              <button
+                className="text-blue-500 mr-2"
+                onClick={() => fetchSanPham(loai.maLoai, Math.max(1, (currentPages[loai.maLoai] || 1) - 1))}
+              >
+                Trang trước
+              </button>
+              <button
+                className="text-blue-500"
+                onClick={() => fetchSanPham(loai.maLoai, (currentPages[loai.maLoai] || 1) + 1)}
+              >
+                Trang sau
+              </button>
+            </div>
+          </div>
+        ))}
+      </main>
     </div>
   );
 };
 
-export default SanPhamMenu;
+export default SanPhamPage;

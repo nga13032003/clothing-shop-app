@@ -1,54 +1,60 @@
-const API_URL = 'https://localhost:7265/api/ChiTietSanPham';
+const API_URL = 'https://localhost:7265/api/BienTheSanPham';
 
-// GET all ChiTietSanPham (not deleted)
-export async function getAllChiTietSanPham() {
+// GET all Biến Thể Sản Phẩm
+export async function getAllBienTheSanPham() {
     const res = await fetch(API_URL);
-    if (!res.ok) throw new Error('Lỗi khi tải danh sách chi tiết sản phẩm');
+    if (!res.ok) throw new Error('Lỗi khi tải danh sách biến thể sản phẩm');
     return await res.json();
 }
 
-// GET by ID
-export async function getChiTietSanPhamById(id) {
-    const res = await fetch(`${API_URL}/${id}`);
-    if (!res.ok) throw new Error(`Không tìm thấy chi tiết sản phẩm có ID: ${id}`);
+// GET by mã biến thể
+export async function getBienTheSanPhamById(maBienThe) {
+    const res = await fetch(`${API_URL}/${maBienThe}`);
+    if (!res.ok) throw new Error(`Không tìm thấy biến thể sản phẩm có mã: ${maBienThe}`);
     return await res.json();
 }
 
-// POST: Create
-export async function createChiTietSanPham(chiTiet) {
+// POST: Create biến thể sản phẩm
+export async function createBienTheSanPham(data) {
     const res = await fetch(API_URL, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(chiTiet),
+        body: JSON.stringify(data),
     });
-    if (!res.ok) throw new Error('Không thể tạo mới chi tiết sản phẩm');
+    if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(`Lỗi khi tạo biến thể sản phẩm: ${errorText}`);
+    }
     return await res.json();
 }
 
-// PUT: Update
-export async function updateChiTietSanPham(id, chiTiet) {
-    const res = await fetch(`${API_URL}/${id}`, {
+// PUT: Update biến thể sản phẩm
+export async function updateBienTheSanPham(maBienThe, data) {
+    const res = await fetch(`${API_URL}/${maBienThe}`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(chiTiet),
+        body: JSON.stringify(data),
     });
-    if (!res.ok) throw new Error('Không thể cập nhật chi tiết sản phẩm');
+    if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(`Không thể cập nhật biến thể sản phẩm: ${errorText}`);
+    }
 }
 
-// DELETE: Soft delete
-export async function deleteChiTietSanPham(id) {
-    const res = await fetch(`${API_URL}/${id}`, {
+// DELETE: Xoá biến thể sản phẩm
+export async function deleteBienTheSanPham(maBienThe) {
+    const res = await fetch(`${API_URL}/${maBienThe}`, {
         method: 'DELETE',
     });
-    if (!res.ok) throw new Error('Không thể xóa chi tiết sản phẩm');
+    if (!res.ok) throw new Error('Không thể xoá biến thể sản phẩm');
 }
 
 // POST: Upload hình ảnh
-export async function uploadImage(file) {
+export async function uploadBienTheImage(file) {
     const formData = new FormData();
     formData.append('file', file);
 
@@ -62,23 +68,21 @@ export async function uploadImage(file) {
     return await res.json(); // Trả về { imageUrl, fileName }
 }
 
-// GET: Theo mã loại sản phẩm
-export async function getChiTietByMaLoaiSP(maLoaiSP) {
-    const res = await fetch(`${API_URL}/loai/${maLoaiSP}`);
-    if (!res.ok) throw new Error(`Không tìm thấy sản phẩm thuộc mã loại ${maLoaiSP}`);
+// GET: Tìm theo mã sản phẩm (query string)
+export async function searchBienTheByMaSanPham(maSanPham) {
+    const res = await fetch(`${API_URL}/search?masp=${maSanPham}`);
+    if (!res.ok) throw new Error(`Không tìm thấy biến thể nào của sản phẩm có mã: ${maSanPham}`);
     return await res.json();
 }
-export const getChiTietSanPhamTheoMaSP = async (maSanPham) => {
-    try {
-      const response = await fetch(`${API_URL}/sanpham/${maSanPham}`);
-      if (!response.ok) {
-        throw new Error('Không thể lấy dữ liệu từ server');
-      }
-      const data = await response.json();
-      return data;
-    } catch (error) {
-      console.error('Lỗi khi fetch chi tiết sản phẩm:', error);
-      return [];
-    }
-  };
-  
+
+// GET: Tìm theo mã loại sản phẩm
+export async function getBienTheByMaLoaiSP(maLoaiSP) {
+    const res = await fetch(`${API_URL}/loai/${maLoaiSP}`);
+    if (!res.ok) throw new Error(`Không tìm thấy sản phẩm nào thuộc mã loại: ${maLoaiSP}`);
+    return await res.json();
+}
+export async function getBienTheTheoMaSP(maSP) {
+    const res = await fetch(`${API_URL}/sanpham/${maSP}`);
+    if (!res.ok) throw new Error(`Không tìm thấy biến thể cho mã sản phẩm: ${maSP}`);
+    return await res.json();
+}
