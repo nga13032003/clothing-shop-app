@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { facebook, instagram, Logo } from '../../assets';
 import { mobileMenuItems } from '../../components/mobileMenuItems';
 import { ShoppingCartOutlined } from '@ant-design/icons';
+import ChatBox from '../../components/chatbox';
 
 
 const { Header, Footer, Content } = Layout;
@@ -95,6 +96,7 @@ const App = ({ children }) => {
       {/* Content Section */}
       <Content className="content">
         <div>{children}</div>
+           <ChatBox />
       </Content>
 
       {/* Footer Section */}

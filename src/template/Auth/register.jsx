@@ -6,43 +6,67 @@ import { login } from '../../assets';
 import { toast } from 'react-toastify';
 import './login.css';
 import { Link, useNavigate } from 'react-router-dom'; // Import useNavigate từ react-router-dom
-import { checkTrungMaKhachHang, registerKhachHang } from '../../api/register';
+import { checkTrungMaKhachHang, checkTrungSoDienThoai, registerKhachHang } from '../../api/register';
 import { GoogleLogin } from '@react-oauth/google';
 
 const { Title } = Typography;
 
 const Register = () => {
-  const navigate = useNavigate(); // Khởi tạo useNavigate
+  const navigate = useNavigate();
 
-  // Hàm xử lý khi form đăng ký được submit
-  // Hàm sinh mã KH tự động format KHxxxxx
+  // Tạo mã khách hàng KHxxxxx
   const generateMaKH = () => {
     const random = Math.floor(Math.random() * 100000);
     return 'KH' + random.toString().padStart(5, '0');
   };
 
-  // Hàm sinh mã KH duy nhất trên FE bằng cách gọi check trùng
+  // Tạo mã khách hàng duy nhất bằng cách check trùng mã
   const generateUniqueMaKH = async () => {
     let maKH;
     let isDuplicate = true;
     let tries = 0;
-    while (isDuplicate && tries < 10) { // giới hạn thử 10 lần tránh vòng lặp vô hạn
+
+    while (isDuplicate && tries < 10) {
       maKH = generateMaKH();
       isDuplicate = await checkTrungMaKhachHang(maKH);
       tries++;
     }
+
     if (isDuplicate) {
-      throw new Error('Không thể tạo mã khách hàng duy nhất, vui lòng thử lại');
+      throw new Error('Không thể tạo mã khách hàng duy nhất, vui lòng thử lại.');
     }
+
     return maKH;
   };
 
   const onFinish = async (values) => {
-    try {
-      const maKH = await generateUniqueMaKH();
+  try {
+    // Bước 1: Check số điện thoại
+    const khachHangTonTai = await checkTrungSoDienThoai(values.phone); // Hàm này nên trả về null nếu không tồn tại, hoặc thông tin khách hàng nếu tồn tại
 
-      const khachHangData = {
-        maKH,  // gửi kèm mã khách hàng tự sinh
+    let khachHangData;
+
+    if (khachHangTonTai) {
+      if (khachHangTonTai.email) {
+        // Trường hợp đã có sdt và email → đã đăng ký
+        toast.error("Tài khoản đã tồn tại. Vui lòng đăng nhập!");
+        return;
+      } else {
+        // Trường hợp đã có sdt nhưng chưa có email → cập nhật thông tin
+        khachHangData = {
+          tenKH: values.username,
+          matKhau: values.password,
+          email: values.email,
+          soDienThoai: values.phone,
+          diaChi: '',
+          maLoaiKH: "KHMOI"
+        };
+      }
+    } else {
+      // Chưa có sdt trong hệ thống → tạo mới khách hàng
+      const maKH = await generateUniqueMaKH();
+      khachHangData = {
+        maKH,
         tenKH: values.username,
         matKhau: values.password,
         email: values.email,
@@ -50,21 +74,18 @@ const Register = () => {
         diaChi: '',
         maLoaiKH: "KHMOI"
       };
-
-      const result = await registerKhachHang(khachHangData);
-      toast.success('Bạn đăng ký thành công, chuyển sang đăng nhập tài khoản...');
-      setTimeout(() => navigate('/login'), 2000);
-
-      console.log('Đăng ký thành công:', result);
-    } catch (error) {
-      toast.error(error.message || 'Đăng ký thất bại, vui lòng thử lại!', {
-        position: 'top-center',
-        autoClose: 3000,
-        theme: 'colored',
-      });
-      console.error('Đăng ký thất bại:', error);
     }
-  };
+
+    const result = await registerKhachHang(khachHangData);
+
+    toast.success('Đăng ký thành công! Chuyển sang đăng nhập...');
+    setTimeout(() => navigate('/login'), 2000);
+  } catch (error) {
+    toast.error(error.message || 'Đăng ký thất bại, vui lòng thử lại!');
+    console.error('Lỗi:', error);
+  }
+};
+
   const handleGoogleSuccess = (credentialResponse) => {
     console.log('Google Login Success:', credentialResponse);
     message.success('Đăng nhập bằng Google thành công (giả lập)');

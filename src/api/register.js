@@ -72,3 +72,27 @@ export const checkTrungMaKhachHang = async (maKhachHang) => {
     throw error;
   }
 };
+export const checkTrungSoDienThoai = async (soDienThoai) => {
+  const apiUrl = `https://localhost:7265/api/KhachHang/CheckSoDienThoai?soDienThoai=${encodeURIComponent(soDienThoai)}`;
+
+  try {
+    const response = await fetch(apiUrl, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Lỗi khi kiểm tra số điện thoại');
+    }
+
+    const result = await response.json();
+
+    // Nếu tồn tại số điện thoại => trả về true
+    return result.TonTai === true;
+  } catch (error) {
+    console.error('Error checking duplicate soDienThoai:', error);
+    throw error;
+  }
+};

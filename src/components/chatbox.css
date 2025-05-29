@@ -1,0 +1,112 @@
+/* components/ChatBox.css */
+.chatbox-wrapper {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  z-index: 1000;
+}
+
+.chatbox-icon {
+  background-color: #1890ff;
+  color: #fff;
+  padding: 12px;
+  border-radius: 50%;
+  font-size: 24px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.chatbox {
+  width: 300px;
+  height: 400px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+}
+
+.chatbox-header {
+  background-color: #1890ff;
+  color: white;
+  padding: 10px;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.chatbox-body {
+  flex: 1;
+  padding: 10px;
+  overflow-y: auto;
+  font-size: 14px;
+}
+
+.chatbox-input {
+  padding: 10px;
+  display: flex;
+  border-top: 1px solid #ccc;
+}
+
+.chatbox-input input {
+  flex: 1;
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.chatbox-input button {
+  margin-left: 10px;
+  background-color: #1890ff;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.close-btn {
+  cursor: pointer;
+}
+
+/* Hiệu ứng lắc */
+@keyframes shake {
+  0% { transform: rotate(0deg); }
+  25% { transform: rotate(5deg); }
+  50% { transform: rotate(-5deg); }
+  75% { transform: rotate(5deg); }
+  100% { transform: rotate(0deg); }
+}
+
+/* Hiệu ứng tỏa sáng */
+@keyframes pulse-glow {
+  0% {
+    box-shadow: 0 0 0 rgba(24, 144, 255, 0.5);
+  }
+  70% {
+    box-shadow: 0 0 20px rgba(24, 144, 255, 0.7);
+  }
+  100% {
+    box-shadow: 0 0 0 rgba(24, 144, 255, 0.5);
+  }
+}
+
+/* Áp dụng hiệu ứng */
+.chatbox-icon {
+  display: flex;
+  align-items: center;
+  background-color: white;
+  padding: 8px 12px;
+  border-radius: 30px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+  animation: shake 1s ease-in-out 1s 1, pulse-glow 2s infinite;
+}
+
+.chatbox-icon:hover {
+  background-color: #f0f0f0;
+  animation: shake 0.6s ease-in-out, pulse-glow 1.5s infinite;
+}
