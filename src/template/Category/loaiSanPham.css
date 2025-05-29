@@ -1,0 +1,39 @@
+.dropdown-container {
+  padding: 20px;
+}
+
+.menu-grid {
+  display: flex;
+  gap: 40px;
+  align-items: flex-start;
+}
+
+.category-column {
+  display: flex;
+  flex-direction: column;
+  min-width: 150px;
+}
+
+.category-title {
+  font-weight: bold;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.sub-category-item {
+  margin-left: 10px;
+  margin-bottom: 4px;
+  font-size: 14px;
+}
+
+.category-image {
+  width: 100%;
+  height: auto;
+  border-radius: 6px;
+  object-fit: cover;
+}
+
+.category-preview-img {
+  max-height: 250px;
+  object-fit: contain;
+}
