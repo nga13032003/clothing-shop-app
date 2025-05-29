@@ -9,6 +9,7 @@ import { ShoppingCartOutlined } from '@ant-design/icons';
 import LoaiSanPhamMenu from '../Category/loaiSanPham';
 import SanPhamPage from '../Merchants/goods';
 import ChatBox from '../../components/chatbox';
+import CustomFooter from '../../components/footer';
 
 const { Header, Footer, Content } = Layout;
 
@@ -99,7 +100,7 @@ const App = ({ children }) => {
           <span className="hotline">
             HOTLINE: <strong>1800 6750</strong>
           </span>
-          <span className="icon">👤</span>
+          {/* <span className="icon">👤</span> */}
 
           {isLoggedIn ? (
             <>
@@ -125,9 +126,7 @@ const App = ({ children }) => {
            <ChatBox />
       </Content>
 
-      <Footer className="footer">
-        {/* ... phần footer giữ nguyên ... */}
-      </Footer>
+      <CustomFooter />
     </Layout>
   );
 };

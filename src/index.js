@@ -13,6 +13,10 @@ import SanPhamPage from './template/Merchants/goods';
 import BannerSection from './template/home/homeContent';
 import ProductPage from './template/product/product';
 import LoaiSanPhamMenu from './template/Category/loaiSanPham';
+import SanPhamTheoLoai from './template/product/sanPhamTheoLoai';
+import CartSidebar from './components/CartSidebar';
+import ProductDetailPage from './template/product/ProductDetailPage';
+import NewsPage from './template/info/new';
 
 const root = createRoot(document.getElementById('root'));
 
@@ -28,7 +32,12 @@ root.render(
           <Route path="/register" element={<Register />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/loai-san-pham" element={<LoaiSanPhamMenu/>}/>
-          <Route path="/san-pham" element={<SanPhamPage/>}/>
+          <Route path="/san-pham" element={<App><SanPhamPage/></App>}/>
+          <Route path="/san-pham/loai/:maLoai" element={<App><SanPhamTheoLoai /></App>} />
+          <Route path="/cart" element={<App><CartSidebar /></App>} />
+          <Route path="/product/:maSanPham" element={<App><ProductDetailPage/></App>} />
+          <Route path="/news" element={<App><NewsPage /></App>} />
+
         </Routes>
       </BrowserRouter>
     </GoogleOAuthProvider>

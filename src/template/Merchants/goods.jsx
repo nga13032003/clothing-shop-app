@@ -1,107 +1,110 @@
 import React, { useEffect, useState } from 'react';
-import { getAllLoaiSanPham } from '../../api/loaiSanPhamApi';
-import {getSanPhamTheoLoaiSP} from '../../api/apiSanPham'
-import { getBienTheTheoMaSP } from '../../api/chiTietSanPhamApi';
+import { getAllSanPham } from '../../api/apiSanPham';
+import { FaShoppingCart } from 'react-icons/fa';
+import CartSidebar from '../../components/CartSidebar';  // import component mới
+import '../product/sanpham.css';
+import './goods.css';
+import { useNavigate } from 'react-router-dom';
 
 const SanPhamPage = () => {
-  const [loaiSanPhamList, setLoaiSanPhamList] = useState([]);
-  const [sanPhamTheoLoai, setSanPhamTheoLoai] = useState({});
-  const [currentPages, setCurrentPages] = useState({});
+  const [sanPhamList, setSanPhamList] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const sanPhamPerPage = 12;
+
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const goToCartPage = () => {
+    navigate('/cart');
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      const loaiList = await getAllLoaiSanPham();
-      setLoaiSanPhamList(loaiList);
-
-      loaiList.forEach(async (loai) => {
-        await fetchSanPham(loai.maLoai, 1);
-      });
-    };
-
-    fetchData();
+    async function fetchTatCaSanPham() {
+      try {
+        setLoading(true);
+        const data = await getAllSanPham();
+        setSanPhamList(data);
+        setLoading(false);
+      } catch (err) {
+        setError('Không thể tải sản phẩm.');
+        setLoading(false);
+      }
+    }
+    fetchTatCaSanPham();
   }, []);
 
-  const fetchSanPham = async (maLoai, page) => {
-  const res = await getSanPhamTheoLoaiSP(maLoai, page);
+  const indexOfLastProduct = currentPage * sanPhamPerPage;
+  const indexOfFirstProduct = indexOfLastProduct - sanPhamPerPage;
+  const currentProducts = sanPhamList.slice(indexOfFirstProduct, indexOfLastProduct);
 
-  const sanPhamsWithGia = [];
+  const totalPages = Math.ceil(sanPhamList.length / sanPhamPerPage);
 
-  // Duyệt từng sp, lấy biến thể, nếu có thì push vào mảng mới
-  for (const sp of res) {
-    try {
-      const bienThe = await getBienTheTheoMaSP(sp.maSP);
+  const toggleCart = () => {
+    setIsCartOpen(prev => !prev);
+  };
 
-      // Nếu có biến thể (mảng không rỗng)
-      if (bienThe.length > 0) {
-        sanPhamsWithGia.push({
-          ...sp,
-          giaBan: bienThe[0].giaBan,
-          hinhAnh: bienThe[0].hinhAnh,
-        });
-      }
-      // Nếu bienThe rỗng thì không thêm sp này
-    } catch (error) {
-      // Nếu lỗi (ví dụ 404 biến thể ko tồn tại), bỏ qua sản phẩm này
-      // Không cần ném lỗi ra nữa
-      console.warn(`Không có biến thể cho sản phẩm mã ${sp.maSP}, bỏ qua.`);
-    }
-  }
-
-  setSanPhamTheoLoai((prev) => ({
-    ...prev,
-    [maLoai]: sanPhamsWithGia,
-  }));
-
-  setCurrentPages((prev) => ({
-    ...prev,
-    [maLoai]: page,
-  }));
-};
+  if (loading) return <div className="p-8 text-center">Đang tải sản phẩm...</div>;
+  if (error) return <div className="p-8 text-center text-red-600">{error}</div>;
 
   return (
-    <div className="flex w-full max-w-[1440px] mx-auto">
-      {/* Sidebar */}
-      <aside className="w-1/4 p-4 border-r border-gray-300">
-        {loaiSanPhamList.map((loai) => (
-          <div key={loai.maLoai} className="mb-4">
-            <p className="text-lg font-semibold lowercase">{loai.parentId}</p>
-            <p className="ml-2">{loai.tenLoai}</p>
-          </div>
-        ))}
-      </aside>
+    <div className="san-pham-theo-loai">
+      <h2>Tất cả sản phẩm</h2>
 
-      {/* Main */}
-      <main className="w-3/4 p-4">
-        {loaiSanPhamList.map((loai) => (
-          <div key={loai.maLoai} className="mb-10">
-            <h2 className="text-xl font-bold mb-2">{loai.tenLoai}</h2>
-            <div className="grid grid-cols-3 gap-4">
-              {(sanPhamTheoLoai[loai.maLoai] || []).slice(0, 3).map((sp) => (
-                <div key={sp.maSP} className="border rounded p-3 shadow">
-                  <img src={sp.hinhAnh} alt={sp.tenSP} className="w-full h-60 object-cover mb-2" />
-                  <p className="font-medium">{sp.tenSP}</p>
-                  <p className="text-red-500 font-bold">{sp.giaBan.toLocaleString()}đ</p>
-                </div>
-              ))}
-            </div>
-            {/* Pagination */}
-            <div className="mt-2">
-              <button
-                className="text-blue-500 mr-2"
-                onClick={() => fetchSanPham(loai.maLoai, Math.max(1, (currentPages[loai.maLoai] || 1) - 1))}
-              >
-                Trang trước
-              </button>
-              <button
-                className="text-blue-500"
-                onClick={() => fetchSanPham(loai.maLoai, (currentPages[loai.maLoai] || 1) + 1)}
-              >
-                Trang sau
-              </button>
-            </div>
+      <div className="san-pham-grid">
+        {currentProducts.length === 0 && (
+          <p className="text-gray-500 col-span-full">Không có sản phẩm nào.</p>
+        )}
+       {currentProducts.map(sp => (
+        <div
+          key={sp.maSanPham}
+          className="san-pham-item"
+          onClick={() => navigate(`/product/${sp.maSanPham}`)}
+          style={{ cursor: 'pointer' }}
+        >
+          <img src={sp.hinhAnhUrl || '/placeholder.jpg'} alt={sp.tenSanPham} />
+          <h4>{sp.tenSanPham}</h4>
+
+          <div className="san-pham-actions" onClick={(e) => e.stopPropagation()}>
+            <button
+              className="mua-ngay-button"
+              onClick={() => {
+                // TODO: Thêm logic Mua ngay ở đây
+                console.log(`Mua ngay: ${sp.maSanPham}`);
+              }}
+            >
+              Mua ngay
+            </button>
+            <FaShoppingCart
+              className="cart-icon"
+              onClick={() => {
+                toggleCart();
+                console.log(`Thêm vào giỏ: ${sp.maSanPham}`);
+              }}
+            />
           </div>
+        </div>
+      ))}
+      </div>
+
+      {/* Phân trang */}
+      <div className="pagination">
+        {Array.from({ length: totalPages }, (_, i) => i + 1).map(pageNum => (
+          <button
+            key={pageNum}
+            className={`pagination-button ${pageNum === currentPage ? 'active' : ''}`}
+            onClick={() => setCurrentPage(pageNum)}
+          >
+            {pageNum}
+          </button>
         ))}
-      </main>
+      </div>
+
+      <CartSidebar isOpen={isCartOpen} onClose={() => setIsCartOpen(false)}>
+        <p>Giỏ hàng trống.</p>
+      </CartSidebar>
     </div>
   );
 };

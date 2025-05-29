@@ -24,7 +24,20 @@
   margin-left: 10px;
   margin-bottom: 4px;
   font-size: 14px;
+  padding: 6px 10px;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  background-color: transparent;
 }
+
+.sub-category-item:hover {
+  background-color: #ebebeb;
+  transform: translateX(5px) scale(1.02);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  color: #aeaeae;
+}
+
 
 .category-image {
   width: 100%;

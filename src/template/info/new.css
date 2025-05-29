@@ -1,0 +1,121 @@
+.news-page {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 24px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  /* box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1); */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #222;
+}
+
+.page-title {
+  font-size: 2.4rem;
+  font-weight: 700;
+  text-align: center;
+  text-transform: uppercase;
+  color: #111;
+  margin-bottom: 40px;
+}
+/* 
+/* Section Titles */
+.section-title {
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: #222;
+  padding-left: 12px;
+  border-left: 6px solid #bfbfbf;
+} */
+
+/* Promotion List */
+.promotion-section, .news-section, .sale-section {
+  margin-bottom: 60px;
+}
+
+.promotion-list {
+  background: #fff3f4;
+  padding: 16px 24px;
+  border-radius: 10px;
+  list-style: inside disc;
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: #444;
+  max-width: 800px;
+  margin: auto;
+}
+
+/* Card style override */
+.ant-card {
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.ant-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.15);
+}
+
+/* Image display full + tag */
+.ant-card-cover {
+  position: relative;
+}
+
+.ant-card-cover img {
+  display: block;
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+}
+
+/* SALE / NEW badge */
+.sale-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: #e53935;
+  color: #fff;
+  font-weight: bold;
+  font-size: 0.85rem;
+  padding: 4px 8px;
+  border-radius: 4px;
+  z-index: 10;
+  text-transform: uppercase;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Meta title & description */
+.ant-card-meta-title {
+  font-weight: 600;
+  color: #222;
+  font-size: 1.2rem;
+}
+
+.ant-card-meta-description {
+  color: #555;
+  font-size: 0.95rem;
+  margin-top: 4px;
+}
+
+/* Custom card class */
+.news-card, .sale-card {
+  cursor: pointer;
+}
+
+/* Responsive tweaks */
+@media (max-width: 768px) {
+  .page-title {
+    font-size: 1.9rem;
+  }
+
+  .section-title {
+    font-size: 1.4rem;
+  }
+
+  .ant-card-cover img {
+    height: 180px;
+  }
+}

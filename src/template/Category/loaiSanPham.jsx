@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import './loaiSanPham.css';
 import { getAllLoaiSanPham } from '../../api/loaiSanPhamApi';
+import { Link } from 'react-router-dom';
+import { FaChevronRight } from 'react-icons/fa';
+
 
 const LoaiSanPhamMenu = () => {
   const [loaiSP, setLoaiSP] = useState([]);
@@ -27,11 +30,21 @@ const LoaiSanPhamMenu = () => {
       <div className="menu-grid">
         {loaiSP.map(loai => (
           <div key={loai.maLoai} className="category-column">
-            <h4 className="category-title">{loai.tenLoai}</h4>
+            <h4 className="category-title">
+              <Link to={`/san-pham/loai/${loai.maLoai}`} className="category-link">
+                {loai.tenLoai}
+              </Link>
+            </h4>
             {loai.children && loai.children.map(child => (
+               <Link to={`/san-pham/loai/${child.maLoai}`} className="subcategory-link">
               <div key={child.maLoai} className="sub-category-item">
-                - {child.tenLoai}
+               
+                  <FaChevronRight style={{ marginRight: 4 }} />
+                  {child.tenLoai}
+                
+
               </div>
+              </Link>
             ))}
           </div>
         ))}
