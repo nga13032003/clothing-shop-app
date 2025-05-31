@@ -1,0 +1,24 @@
+{
+  "files": {
+    "main.css": "/clothing-shop-app/static/css/main.a0e6bb7a.css",
+    "main.js": "/clothing-shop-app/static/js/main.e91a4231.js",
+    "static/media/banner1.jpeg": "/clothing-shop-app/static/media/banner1.97fb14f21baa2a1db9a2.jpeg",
+    "static/media/banner2.jpeg": "/clothing-shop-app/static/media/banner2.b013bfaf13989524a1f9.jpeg",
+    "static/media/banner3.jpeg": "/clothing-shop-app/static/media/banner3.641be683fb5364a92b7b.jpeg",
+    "static/media/bannerKM.jpg": "/clothing-shop-app/static/media/bannerKM.8d25298817257bb0832d.jpg",
+    "static/media/bannercontent1.jpg": "/clothing-shop-app/static/media/bannercontent1.245c7c6929536c24b4bb.jpg",
+    "static/media/FaSic.jpg": "/clothing-shop-app/static/media/FaSic.477475e4d72a63fcaa04.jpg",
+    "static/media/bannercontent2.jpg": "/clothing-shop-app/static/media/bannercontent2.0710cb02fbc115b5038d.jpg",
+    "static/media/login.jpg": "/clothing-shop-app/static/media/login.bab30828476798c7ef2e.jpg",
+    "static/media/QA3.jpg": "/clothing-shop-app/static/media/QA3.0813837478ae399a8b0c.jpg",
+    "static/media/QA2.jpg": "/clothing-shop-app/static/media/QA2.f2356d47fc82c4d77ecf.jpg",
+    "static/media/QA1.jpg": "/clothing-shop-app/static/media/QA1.0c76fbde167c6174e076.jpg",
+    "index.html": "/clothing-shop-app/index.html",
+    "main.a0e6bb7a.css.map": "/clothing-shop-app/static/css/main.a0e6bb7a.css.map",
+    "main.e91a4231.js.map": "/clothing-shop-app/static/js/main.e91a4231.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.a0e6bb7a.css",
+    "static/js/main.e91a4231.js"
+  ]
+}
