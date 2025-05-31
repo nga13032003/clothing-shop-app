@@ -19,11 +19,11 @@ import ProductDetailPage from './template/product/ProductDetailPage';
 import NewsPage from './template/info/new';
 
 const root = createRoot(document.getElementById('root'));
-
+const basename = '/clothing-shop-app';
 root.render(
   <StrictMode>
     <GoogleOAuthProvider clientId="YOUR_GOOGLE_CLIENT_ID">
-      <BrowserRouter>
+      <BrowserRouter basename={basename}>
         <ToastContainer position="top-center" autoClose={2000} theme="colored" />
         <Routes>
           <Route path="/" element={<App><BannerSection/></App>} />
