@@ -37,7 +37,6 @@ root.render(
           <Route path="/cart" element={<App><CartSidebar /></App>} />
           <Route path="/product/:maSanPham" element={<App><ProductDetailPage/></App>} />
           <Route path="/news" element={<App><NewsPage /></App>} />
-
         </Routes>
       </BrowserRouter>
     </GoogleOAuthProvider>

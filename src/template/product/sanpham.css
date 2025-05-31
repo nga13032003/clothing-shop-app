@@ -26,7 +26,7 @@
 
 .san-pham-item img {
   width: 100%;
-  aspect-ratio: 1365 / 2048; /* tỷ lệ chuẩn */
+ /* tỷ lệ chuẩn */
   object-fit: contain;
   background-color: #f8f8f8;
   border-radius: 8px;

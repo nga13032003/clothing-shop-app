@@ -71,7 +71,6 @@
   object-fit: cover;
 }
 
-/* SALE / NEW badge */
 .sale-badge {
   position: absolute;
   top: 12px;
