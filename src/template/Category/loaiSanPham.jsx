@@ -9,21 +9,17 @@ const LoaiSanPhamMenu = () => {
   const [loaiSP, setLoaiSP] = useState([]);
 
   useEffect(() => {
-    async function fetchData() {
-      const data = await getAllLoaiSanPham();
-      const loaiCha = data.filter(item => item.parentId === null);
-
-      // Gắn danh sách loại con cho từng loại cha
-      const loaiWithChildren = loaiCha.map(loai => ({
-        ...loai,
-        children: data.filter(child => child.parentId === loai.maLoai)
-      }));
-
-      setLoaiSP(loaiWithChildren);
+  async function fetchData() {
+    try {
+      const data = await getAllLoaiSanPham(); // data là mảng cây
+      setLoaiSP(data);
+    } catch (error) {
+      console.error('Failed to fetch LoaiSanPham:', error);
     }
+  }
+  fetchData();
+}, []);
 
-    fetchData();
-  }, []);
 
   return (
     <div className="dropdown-container">
@@ -36,18 +32,16 @@ const LoaiSanPhamMenu = () => {
               </Link>
             </h4>
             {loai.children && loai.children.map(child => (
-               <Link to={`/san-pham/loai/${child.maLoai}`} className="subcategory-link">
-              <div key={child.maLoai} className="sub-category-item">
-               
+              <Link key={child.maLoai} to={`/san-pham/loai/${child.maLoai}`} className="subcategory-link">
+                <div className="sub-category-item">
                   <FaChevronRight style={{ marginRight: 4 }} />
                   {child.tenLoai}
-                
-
-              </div>
+                </div>
               </Link>
             ))}
           </div>
         ))}
+
         {/* Hình ảnh minh họa bên phải */}
         <div className="category-image">
           <img

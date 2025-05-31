@@ -51,6 +51,7 @@ const ProductDetailPage = () => {
       if (matched) {
         setSelectedVariant(matched);
         setSelectedImageUrl(matched.hinhAnhUrl || sanPham?.hinhAnhUrl || '');
+        console.log("bienThes.map(hinhAnhUrl):", bienThes.map(b => b.hinhAnhUrl));
       }
     } else {
       setSelectedVariant(null);
@@ -59,6 +60,17 @@ const ProductDetailPage = () => {
 
   // Lấy danh sách tất cả màu
   const allColors = [...new Set(bienThes.map(bt => bt.mauSac))];
+
+  const cleanImageUrl = (url) => {
+  try {
+    if (!url) return '';
+    const matches = url.match(/https?:\/\/[^"]+\/Images\/[^"]+/i);
+    return matches ? matches[0] : url;
+  } catch {
+    return url;
+  }
+};
+
 
   // Lọc size theo màu đã chọn
   const filteredSizes = selectedColor
