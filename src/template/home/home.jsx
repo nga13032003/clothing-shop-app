@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Layout, Menu } from 'antd';
+import { Layout, Menu, Badge } from 'antd';
 import './home.css';
 import { Link } from 'react-router-dom';
 import { facebook, instagram, Logo } from '../../assets';
@@ -10,6 +10,9 @@ import LoaiSanPhamMenu from '../Category/loaiSanPham';
 import SanPhamPage from '../Merchants/goods';
 import ChatBox from '../../components/chatbox';
 import CustomFooter from '../../components/footer';
+import { getGioHangByKhachHang } from '../../api/apiCart';
+import { getCartItems } from '../../api/apiCartDetail';
+
 
 const { Header, Footer, Content } = Layout;
 
@@ -17,20 +20,58 @@ const App = ({ children }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showMenu, setShowMenu] = useState(false); // state cho hover menu sản phẩm
+ const [cartCount, setCartCount] = useState(0);
+  const [cartItems, setCartItems] = useState([]);
+  
+  // Hàm cập nhật giỏ hàng và số lượng
+  const fetchCartData = async () => {
+    const khachHangStr = localStorage.getItem('khachHang');
+    if (!khachHangStr) {
+      setCartCount(0);
+      setCartItems([]);
+      return;
+    }
+    const khachHang = JSON.parse(khachHangStr);
+    const maKhachHang = khachHang.maKH;
+
+    try {
+      const gioHang = await getGioHangByKhachHang(maKhachHang);
+      if (gioHang && gioHang.length > 0) {
+        const maGioHang = gioHang[0].maGioHang;
+        const items = await getCartItems(maGioHang);
+        setCartItems(items);
+        const totalQuantity = items.reduce((sum, item) => sum + item.soLuong, 0);
+        setCartCount(totalQuantity);
+      } else {
+        setCartCount(0);
+        setCartItems([]);
+      }
+    } catch (error) {
+      console.error('Lỗi khi lấy giỏ hàng:', error);
+    }
+  };
 
   useEffect(() => {
     const khachHang = localStorage.getItem('khachHang');
-    if (khachHang) setIsLoggedIn(true);
-    else setIsLoggedIn(false);
+    if (khachHang) {
+      setIsLoggedIn(true);
+      fetchCartData();  // Lấy dữ liệu giỏ hàng khi đăng nhập
+    } else {
+      setIsLoggedIn(false);
+      setCartCount(0);
+      setCartItems([]);
+    }
   }, []);
-
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
+  // Đăng xuất
   const handleLogout = () => {
     localStorage.removeItem('khachHang');
     setIsLoggedIn(false);
+    setCartCount(0);
+    setCartItems([]);
   };
 
   return (
@@ -104,9 +145,13 @@ const App = ({ children }) => {
 
           {isLoggedIn ? (
             <>
-              <Link to="/cart" className="cart-icon">
-                <ShoppingCartOutlined />
+              <Link to="/cart-item" className="cart-icon">
+                <Badge count={cartCount} size="small" offset={[0, 6]}>
+                  <ShoppingCartOutlined style={{ fontSize: '20px', color: '#000' }} />
+                </Badge>
               </Link>
+
+
 
               <Link to="/login" onClick={handleLogout} className="btn btn-register">
                 Đăng xuất

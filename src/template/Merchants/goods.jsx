@@ -1,13 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { getAllSanPham } from '../../api/apiSanPham';
 import { FaShoppingCart } from 'react-icons/fa';
-import CartSidebar from '../../components/CartSidebar';  // import component mới
+//import CartSidebar from '../../components/CartSidebar';  // import component mới
 import '../product/sanpham.css';
 import './goods.css';
 import { useNavigate } from 'react-router-dom';
+import DialogAddToCart from '../Cart/dialogAddToCart';
+import { getCartItems } from '../../api/apiCartDetail';
 
 const SanPhamPage = () => {
   const [sanPhamList, setSanPhamList] = useState([]);
+  const [selectedSanPham, setSelectedSanPham] = useState(null);
+  const [openDialog, setOpenDialog] = useState(false);
+
   const [currentPage, setCurrentPage] = useState(1);
   const sanPhamPerPage = 12;
 
@@ -16,10 +21,34 @@ const SanPhamPage = () => {
 
   const [isCartOpen, setIsCartOpen] = useState(false);
   const navigate = useNavigate();
+ const [cartItems, setCartItems] = useState([]);
 
+  // Hàm fetch lại giỏ hàng (bạn có thể gọi sau khi thêm thành công)
+  const fetchCartData = async () => {
+    try {
+      const khachHangStr = localStorage.getItem('khachHang');
+      const khachHang = khachHangStr ? JSON.parse(khachHangStr) : null;
+      if (!khachHang) return;
+      const items = await getCartItems(khachHang.maKH);
+      setCartItems(items);
+    } catch (error) {
+      console.error('Lỗi khi lấy dữ liệu giỏ hàng:', error);
+    }
+  };
+
+  useEffect(() => {
+    // Load giỏ hàng khi component mount
+    fetchCartData();
+  }, []);
   const goToCartPage = () => {
     navigate('/cart');
   };
+  // Khi mở dialog
+  const handleOpenDialog = (sp) => {
+    setSelectedSanPham(sp);
+    setOpenDialog(true);
+  };
+
 
   useEffect(() => {
     async function fetchTatCaSanPham() {
@@ -35,6 +64,18 @@ const SanPhamPage = () => {
     }
     fetchTatCaSanPham();
   }, []);
+
+ const handleMuaNgay = (sanPham) => {
+  const isLoggedIn = !!localStorage.getItem('employeeCode');
+
+  if (!isLoggedIn) {
+    navigate('/login');
+  } else {
+    // Tuỳ ý chuyển trang hoặc thêm vào giỏ hàng
+    navigate(`/product/${sanPham.maSanPham}`);
+  }
+};
+
 
   const indexOfLastProduct = currentPage * sanPhamPerPage;
   const indexOfFirstProduct = indexOfLastProduct - sanPhamPerPage;
@@ -68,22 +109,18 @@ const SanPhamPage = () => {
           <h4>{sp.tenSanPham}</h4>
 
           <div className="san-pham-actions" onClick={(e) => e.stopPropagation()}>
-            <button
+           <button
               className="mua-ngay-button"
-              onClick={() => {
-                // TODO: Thêm logic Mua ngay ở đây
-                console.log(`Mua ngay: ${sp.maSanPham}`);
-              }}
+              onClick={() => handleMuaNgay(sp)}
             >
               Mua ngay
             </button>
-            <FaShoppingCart
+
+                        <FaShoppingCart
               className="cart-icon"
-              onClick={() => {
-                toggleCart();
-                console.log(`Thêm vào giỏ: ${sp.maSanPham}`);
-              }}
+              onClick={() => handleOpenDialog(sp)}
             />
+
           </div>
         </div>
       ))}
@@ -101,10 +138,17 @@ const SanPhamPage = () => {
           </button>
         ))}
       </div>
+        {openDialog && selectedSanPham && (
+        <DialogAddToCart
+          sanPham={selectedSanPham}
+          onClose={() => setOpenDialog(false)}
+          fetchCartData={fetchCartData} // truyền hàm fetch lại giỏ hàng
+        />
+      )}
 
-      <CartSidebar isOpen={isCartOpen} onClose={() => setIsCartOpen(false)}>
+      {/* <CartSidebar isOpen={isCartOpen} onClose={() => setIsCartOpen(false)}>
         <p>Giỏ hàng trống.</p>
-      </CartSidebar>
+      </CartSidebar> */}
     </div>
   );
 };
