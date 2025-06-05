@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { getSanPhamById } from '../../api/apiSanPham';
 import { getBienTheTheoMaSP } from '../../api/chiTietSanPhamApi';
 import './productDetail.css';
 import { FaShoppingCart } from 'react-icons/fa';
 
 const ProductDetailPage = () => {
+  const navigate = useNavigate();
   const { maSanPham } = useParams();
   const [sanPham, setSanPham] = useState(null);
   const [bienThes, setBienThes] = useState([]);
@@ -51,6 +52,7 @@ const ProductDetailPage = () => {
       if (matched) {
         setSelectedVariant(matched);
         setSelectedImageUrl(matched.hinhAnhUrl || sanPham?.hinhAnhUrl || '');
+        // console.log("bienThes.map(hinhAnhUrl):", bienThes.map(b => b.hinhAnhUrl));
       }
     } else {
       setSelectedVariant(null);
@@ -60,18 +62,47 @@ const ProductDetailPage = () => {
   // Lấy danh sách tất cả màu
   const allColors = [...new Set(bienThes.map(bt => bt.mauSac))];
 
+  const cleanImageUrl = (url) => {
+  try {
+    if (!url) return '';
+    const matches = url.match(/https?:\/\/[^"]+\/Images\/[^"]+/i);
+    return matches ? matches[0] : url;
+  } catch {
+    return url;
+  }
+};
+
+
   // Lọc size theo màu đã chọn
   const filteredSizes = selectedColor
     ? [...new Set(bienThes.filter(bt => bt.mauSac === selectedColor).map(bt => bt.size))]
     : [...new Set(bienThes.map(bt => bt.size))];
 
   // Lấy tất cả ảnh của biến thể (không chỉ theo màu)
-  const variantImages = [...new Set(bienThes.map(bt => bt.hinhAnhUrl).filter(Boolean))];
+  // Lấy danh sách ảnh từ biến thể
+const variantImages = bienThes
+  .map(bt => bt.hinhAnh)
+  .filter(Boolean); // loại bỏ null/undefined
+
 
   // Nếu không có ảnh biến thể, thêm ảnh mặc định từ sản phẩm
-  if (variantImages.length === 0 && sanPham?.hinhAnhUrl) {
-    variantImages.push(sanPham.hinhAnhUrl);
+  // if (variantImages.length === 0 && sanPham?.hinhAnhUrl) {
+  //   variantImages.push(sanPham.hinhAnhUrl);
+  // }
+const allImages = variantImages.length > 0
+  ? [...new Set(variantImages)] // loại trùng
+  : sanPham?.hinhAnh ? [sanPham.hinhAnh] : [];
+
+  const handleMuaNgay = (sanPham) => {
+  const isLoggedIn = !!localStorage.getItem('khachHang');
+
+  if (!isLoggedIn) {
+    navigate('/login');
+  } else {
+    // Tuỳ ý chuyển trang hoặc thêm vào giỏ hàng
+    navigate(`/product/${sanPham.maSanPham}`);
   }
+};
 
   if (!sanPham) return <div>Đang tải sản phẩm...</div>;
 
@@ -90,25 +121,27 @@ const ProductDetailPage = () => {
                 className="main-image"
             />
             </div>
-            <div className="thumbnail-container">
-            {variantImages.map((imgUrl) => (
-                <img
+            {allImages.length > 0 && (
+          <div className="thumbnail-container">
+            {allImages.map((imgUrl) => (
+              <img
                 key={imgUrl}
                 src={imgUrl}
                 alt="thumbnail"
                 className={`thumbnail-image ${imgUrl === selectedImageUrl ? 'selected' : ''}`}
                 onClick={() => {
-                    setSelectedImageUrl(imgUrl);
-                    const matched = bienThes.find(bt => bt.hinhAnhUrl === imgUrl);
-                    if (matched) {
+                  setSelectedImageUrl(imgUrl);
+                  const matched = bienThes.find(bt => bt.hinhAnh === imgUrl);
+                  if (matched) {
                     setSelectedVariant(matched);
                     setSelectedColor(matched.mauSac);
                     setSelectedSize(matched.size);
-                    }
+                  }
                 }}
-                />
+              />
             ))}
-            </div>
+          </div>
+        )}
         </div>
          <div className="info-section">
             <h2 className="product-title">{sanPham.tenSanPham}</h2>
@@ -164,8 +197,8 @@ const ProductDetailPage = () => {
             </div>
             <br/>
             <div className="san-pham-actions">
-                <button className="mua-ngay-button">Mua ngay</button>
-                <FaShoppingCart className="cart-icon" />
+                <button className="mua-ngay-button" onClick={() => handleMuaNgay(sanPham)}>Mua ngay</button>
+                <FaShoppingCart className="cart-icon"  onClick={() => handleMuaNgay(sanPham)}/>
             </div>
         </div>
         </div>

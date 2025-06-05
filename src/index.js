@@ -17,6 +17,9 @@ import SanPhamTheoLoai from './template/product/sanPhamTheoLoai';
 import CartSidebar from './components/CartSidebar';
 import ProductDetailPage from './template/product/ProductDetailPage';
 import NewsPage from './template/info/new';
+import CartPage from './template/Cart/detailCart';
+import DialogAddToCart from './template/Cart/dialogAddToCart';
+import CheckoutPage from './template/Cart/checkOut';
 import ResetPassword from './template/Auth/resetPassword';
 
 const root = createRoot(document.getElementById('root'));
@@ -36,9 +39,14 @@ root.render(
           <Route path="/san-pham" element={<App><SanPhamPage/></App>}/>
           <Route path="/san-pham/loai/:maLoai" element={<App><SanPhamTheoLoai /></App>} />
           <Route path="/cart" element={<App><CartSidebar /></App>} />
+          <Route path="/thanh-toan" element={<App><CheckoutPage /></App>} />
+          
           <Route path="/product/:maSanPham" element={<App><ProductDetailPage/></App>} />
+          <Route path="/san-pham/:maSanPham/dialog" element={<App><DialogAddToCart /></App>} />
+
           <Route path="/news" element={<App><NewsPage /></App>} />
-          <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path='/cart-item' element={<App><CartPage/></App>}/>
+            <Route path="/reset-password" element={<ResetPassword />} />
         </Routes>
       </BrowserRouter>
     </GoogleOAuthProvider>

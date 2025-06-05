@@ -157,9 +157,9 @@
 }
 
 .thumbnail-image {
-  width: 60px;
-  height: 60px;
-  object-fit: cover;
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
   border: 2px solid transparent;
   border-radius: 8px;
   transition: all 0.3s ease;
