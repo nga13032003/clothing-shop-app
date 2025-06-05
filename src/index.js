@@ -17,6 +17,7 @@ import SanPhamTheoLoai from './template/product/sanPhamTheoLoai';
 import CartSidebar from './components/CartSidebar';
 import ProductDetailPage from './template/product/ProductDetailPage';
 import NewsPage from './template/info/new';
+import ResetPassword from './template/Auth/resetPassword';
 
 const root = createRoot(document.getElementById('root'));
 const basename = '/clothing-shop-app';
@@ -37,6 +38,7 @@ root.render(
           <Route path="/cart" element={<App><CartSidebar /></App>} />
           <Route path="/product/:maSanPham" element={<App><ProductDetailPage/></App>} />
           <Route path="/news" element={<App><NewsPage /></App>} />
+          <Route path="/reset-password" element={<ResetPassword />} />
         </Routes>
       </BrowserRouter>
     </GoogleOAuthProvider>
