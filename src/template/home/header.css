@@ -1,0 +1,133 @@
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+  background: white;
+  position: relative;
+  z-index: 1001;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logo img {
+  width: 50px;
+}
+
+.logo-text {
+  font-weight: bold;
+  font-size: 20px;
+  color: #000;
+}
+
+.menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 26px;
+  cursor: pointer;
+}
+
+.nav-links {
+  display: flex;
+  gap: 20px;
+  list-style: none;
+}
+
+.nav-links li a {
+  text-decoration: none;
+  color: #000;
+  font-weight: 500;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.hotline {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* Responsive cho mobile */
+@media (max-width: 768px) {
+  .menu-toggle {
+    display: block;
+  }
+  .nav-links {
+    display: none; /* Ẩn menu ngang */
+  }
+}
+
+/* Sidebar menu */
+.sidebar-menu {
+  position: fixed;
+  top: 0;
+  left: -280px; /* ẩn bên trái */
+  width: 280px;
+  height: 100vh;
+  background-color: #001529;
+  color: #fff;
+  padding: 20px;
+  box-sizing: border-box;
+  transition: left 0.3s ease;
+  z-index: 1500;
+  overflow-y: auto;
+}
+
+.sidebar-menu.open {
+  left: 0; /* hiện ra */
+}
+
+.sidebar-menu .close-btn {
+  background: none;
+  border: none;
+  font-size: 30px;
+  color: #fff;
+  cursor: pointer;
+  margin-bottom: 20px;
+  display: block;
+  text-align: right;
+  width: 100%;
+}
+
+.sidebar-menu nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar-menu nav ul li {
+  margin-bottom: 15px;
+}
+
+.sidebar-menu nav ul li a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 16px;
+  display: block;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-menu nav ul li a:hover {
+  background-color: #1890ff;
+  color: white;
+}
+
+/* Overlay che màn hình khi sidebar mở */
+.sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 1400;
+}
