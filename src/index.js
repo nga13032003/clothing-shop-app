@@ -19,11 +19,7 @@ import ProductDetailPage from './template/product/ProductDetailPage';
 import NewsPage from './template/info/new';
 import CartPage from './template/Cart/detailCart';
 import DialogAddToCart from './template/Cart/dialogAddToCart';
-// import CheckoutPage from './template/Cart/checkOut';
-import ResetPassword from './template/Auth/resetPassword';
-import MyProfile from './template/Auth/myProfile';
 import CheckoutPage from './template/CheckOut/checkOut';
-import OrderSuccessPage from './template/CheckOut/OrderSuccessPage';
 
 const root = createRoot(document.getElementById('root'));
 const basename = '/clothing-shop-app';
@@ -42,18 +38,13 @@ root.render(
           <Route path="/san-pham" element={<App><SanPhamPage/></App>}/>
           <Route path="/san-pham/loai/:maLoai" element={<App><SanPhamTheoLoai /></App>} />
           <Route path="/cart" element={<App><CartSidebar /></App>} />
-          {/* <Route path="/thanh-toan" element={<App><CheckoutPage /></App>} /> */}
+          <Route path="/thanh-toan" element={<App><CheckoutPage /></App>} />
           
           <Route path="/product/:maSanPham" element={<App><ProductDetailPage/></App>} />
           <Route path="/san-pham/:maSanPham/dialog" element={<App><DialogAddToCart /></App>} />
-          
-          <Route path="/checkout" element={<App><CheckoutPage/></App>} />
 
           <Route path="/news" element={<App><NewsPage /></App>} />
           <Route path='/cart-item' element={<App><CartPage/></App>}/>
-          <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path='/don-hang-cua-toi' element={<App><OrderSuccessPage/></App>}/>
-            
         </Routes>
       </BrowserRouter>
     </GoogleOAuthProvider>
