@@ -1,0 +1,202 @@
+/* === Footer Tổng thể === */
+.footer {
+  background-color: #e9e6e6;
+  color: #333;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  user-select: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  box-sizing: border-box;
+}
+
+/* Container bố trí 4 cột */
+.footer-container {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 30px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Mỗi cột trong footer */
+.footer-section {
+  flex: 1 1 220px;
+  text-align: left;
+  min-width: 220px;
+  transition: all 0.3s ease;
+}
+
+/* Tiêu đề cột */
+.footer-section h4 {
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: #000;
+  text-transform: uppercase;
+  font-size: 16px;
+  cursor: default;
+  transition: color 0.3s ease;
+}
+
+.footer-section h4:hover {
+  color: #ff4d4f;
+}
+
+/* Văn bản, link */
+.footer-section p,
+.footer-section a {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #333;
+  text-decoration: none;
+  display: block;
+  margin-bottom: 8px;
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.footer-section a:hover {
+  color: #ff4d4f;
+  transform: translateX(5px);
+}
+
+/* Logo cột */
+.footer-logo {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+  cursor: default;
+}
+
+.footer-logo img {
+  width: 50px;
+  height: auto;
+  margin-right: 12px;
+  transition: transform 0.3s ease;
+}
+
+.footer-logo img:hover {
+  transform: rotate(-6deg) scale(1.1);
+}
+
+.footer-logo h3 {
+  font-size: 24px;
+  font-weight: 800;
+  color: #111;
+  user-select: none;
+}
+
+/* Mạng xã hội */
+.footer-social {
+  margin-top: 10px;
+  display: flex;
+  gap: 14px;
+}
+
+.footer-social a {
+  color: #000;
+  font-size: 22px;
+  transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.footer-social a:hover {
+  transform: scale(1.2);
+  color: #ff4d4f;
+}
+
+/* Danh sách liên kết nhanh */
+.footer-section ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-section ul li {
+  margin-bottom: 8px;
+  transition: transform 0.3s ease;
+  cursor: pointer;
+}
+
+.footer-section ul li:hover {
+  transform: translateX(6px);
+}
+
+/* Bản đồ iframe */
+.footer-map iframe {
+  width: 100%;
+  height: 180px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.footer-map iframe:hover {
+  box-shadow: 0 5px 18px rgba(0, 0, 0, 0.25);
+  transform: scale(1.02);
+}
+
+/* Dòng bản quyền */
+.footer-bottom {
+  width: 100%;
+  text-align: center;
+  border-top: 1px solid #ddd;
+  font-size: 13px;
+  color: #666;
+  animation: fadeInUp 0.6s ease forwards;
+  user-select: none;
+}
+
+
+/* Animation fadeInUp cho bản quyền */
+@keyframes fadeInUp {
+  from {
+    transform: translateY(10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* === Responsive cho màn hình nhỏ === */
+@media (max-width: 768px) {
+  .footer {
+    padding: 25px 15px;
+  }
+
+  .footer-container {
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    max-width: 100%;
+  }
+
+  /* Chỉ giữ lại phần Thông tin liên hệ (cột 2) */
+  .footer-container .footer-section:not(:nth-child(2)) {
+    display: none !important;
+  }
+
+  .footer-container .footer-section:nth-child(2) {
+    width: 100%;
+    max-width: 360px;
+    text-align: center;
+    margin: 0 auto;
+  }
+
+  /* Tiêu đề và text lớn hơn 1 chút */
+  .footer-section h4 {
+    font-size: 18px;
+    margin-bottom: 16px;
+  }
+
+  .footer-section p,
+  .footer-section a {
+    font-size: 15px;
+    margin-bottom: 12px;
+  }
+
+  /* Mạng xã hội căn giữa */
+  .footer-social {
+    justify-content: center;
+  }
+}

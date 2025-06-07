@@ -1,0 +1,94 @@
+.my-profile-container {
+  /* max-width: 1200px; */
+  margin: 0 auto;
+  padding: 40px;
+  /* background: #ffffff; */
+  /* border-radius: 20px; */
+  /* box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1); */
+  transition: all 0.3s ease;
+}
+
+.my-profile-title {
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 28px;
+  color: #1890ff;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.my-profile-title svg {
+  margin-right: 8px;
+}
+
+.my-avatar-container {
+  /* display: flex;
+  flex-direction: column;
+  align-items: center; */
+  margin-bottom: 20px;
+}
+
+.my-avatar-container .ant-avatar {
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease;
+}
+
+.my-avatar-container .ant-avatar:hover {
+  transform: scale(1.1);
+}
+
+.my-avatar-container h3 {
+  margin-top: 12px;
+  font-weight: 600;
+}
+
+.my-tabs .ant-tabs-tab {
+  font-size: 16px;
+  font-weight: 00;
+}
+
+.my-card {
+  border-radius: 16px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.my-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.my-table .ant-table {
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.my-table .ant-table-thead > tr > th {
+  background: #f0f2f5;
+  color: #1890ff;
+  font-weight: 600;
+}
+
+.my-table .ant-table-tbody > tr {
+  transition: background-color 0.3s ease;
+}
+
+.my-table .ant-table-tbody > tr:hover {
+  background: #e6f7ff;
+}
+
+@media (max-width: 768px) {
+  .my-profile-title {
+    font-size: 20px;
+  }
+  .my-avatar-container .ant-avatar {
+    width: 80px;
+    height: 80px;
+  }
+  .my-tabs .ant-tabs-tab {
+    font-size: 14px;
+  }
+  
+}

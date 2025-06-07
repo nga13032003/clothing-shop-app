@@ -59,7 +59,7 @@ const Register = () => {
           email: values.email,
           soDienThoai: values.phone,
           diaChi: '',
-          maLoaiKH: "KHMOI"
+          maLoaiKH: "KHM"
         };
       }
     } else {
@@ -72,7 +72,7 @@ const Register = () => {
         email: values.email,
         soDienThoai: values.phone,
         diaChi: '',
-        maLoaiKH: "KHMOI"
+        maLoaiKH: "KHM"
       };
     }
 
