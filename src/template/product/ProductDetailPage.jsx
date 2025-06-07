@@ -4,6 +4,8 @@ import { getSanPhamById } from '../../api/apiSanPham';
 import { getBienTheTheoMaSP } from '../../api/chiTietSanPhamApi';
 import './productDetail.css';
 import { FaShoppingCart } from 'react-icons/fa';
+import DialogAddToCart from '../Cart/dialogAddToCart';
+import { toast } from 'react-toastify';
 
 const ProductDetailPage = () => {
   const navigate = useNavigate();
@@ -14,6 +16,8 @@ const ProductDetailPage = () => {
   const [selectedSize, setSelectedSize] = useState('');
   const [selectedVariant, setSelectedVariant] = useState(null);
   const [selectedImageUrl, setSelectedImageUrl] = useState('');
+  const [openDialogCart, setOpenDialogCart] = useState(false);
+
 
   // Lấy dữ liệu sản phẩm và biến thể
   useEffect(() => {
@@ -43,21 +47,28 @@ const ProductDetailPage = () => {
     }
   }, [bienThes, sanPham]);
 
-  // Khi chọn màu + size thì cập nhật biến thể + ảnh tương ứng
-  useEffect(() => {
-    if (selectedColor && selectedSize) {
-      const matched = bienThes.find(
-        (bt) => bt.mauSac === selectedColor && bt.size === selectedSize
-      );
-      if (matched) {
-        setSelectedVariant(matched);
-        setSelectedImageUrl(matched.hinhAnhUrl || sanPham?.hinhAnhUrl || '');
-        // console.log("bienThes.map(hinhAnhUrl):", bienThes.map(b => b.hinhAnhUrl));
-      }
-    } else {
-      setSelectedVariant(null);
-    }
-  }, [selectedColor, selectedSize, bienThes, sanPham]);
+ // Khi chỉ chọn màu, cũng cập nhật ảnh đầu tiên có màu đó (kể cả chưa chọn size)
+ useEffect(() => {
+   if (selectedColor && !selectedSize) {
+     const firstMatch = bienThes.find((bt) => bt.mauSac === selectedColor);
+     if (firstMatch) {
+       setSelectedImageUrl(firstMatch.hinhAnh || sanPham.hinhAnh);
+     }
+   }
+ }, [selectedColor, selectedSize, bienThes, sanPham]);
+ 
+ 
+   // Cập nhật variant khi chọn màu và size
+   useEffect(() => {
+     const found = bienThes.find(
+       (bt) => bt.mauSac === selectedColor && bt.size === selectedSize
+     );
+     if (found) {
+       setSelectedVariant(found);
+       setSelectedImageUrl(found.hinhAnh || sanPham.hinhAnh);
+     }
+   }, [selectedColor, selectedSize, bienThes, sanPham]);
+
 
   // Lấy danh sách tất cả màu
   const allColors = [...new Set(bienThes.map(bt => bt.mauSac))];
@@ -93,16 +104,17 @@ const allImages = variantImages.length > 0
   ? [...new Set(variantImages)] // loại trùng
   : sanPham?.hinhAnh ? [sanPham.hinhAnh] : [];
 
-  const handleMuaNgay = (sanPham) => {
+  const handleMuaNgay = () => {
   const isLoggedIn = !!localStorage.getItem('khachHang');
-
   if (!isLoggedIn) {
     navigate('/login');
+  } else if (!selectedVariant) {
+    toast.warning("Vui lòng chọn màu sắc và size trước khi thêm vào giỏ hàng.");
   } else {
-    // Tuỳ ý chuyển trang hoặc thêm vào giỏ hàng
-    navigate(`/product/${sanPham.maSanPham}`);
+    setOpenDialogCart(true);
   }
 };
+
 
   if (!sanPham) return <div>Đang tải sản phẩm...</div>;
 
@@ -116,7 +128,7 @@ const allImages = variantImages.length > 0
         <div className="image-section">
             <div className="main-image-container">
             <img
-                src={sanPham.hinhAnhUrl || selectedImageUrl}
+                src={selectedImageUrl || sanPham.hinhAnhUrl}
                 alt={sanPham.tenSanPham}
                 className="main-image"
             />
@@ -157,7 +169,7 @@ const allImages = variantImages.length > 0
                     className={`option-button ${color === selectedColor ? 'selected' : ''}`}
                     onClick={() => {
                     setSelectedColor(color);
-                    setSelectedSize('');
+                    //setSelectedSize('');
                     }}
                 >
                     {color}
@@ -197,12 +209,20 @@ const allImages = variantImages.length > 0
             </div>
             <br/>
             <div className="san-pham-actions">
-                <button className="mua-ngay-button" onClick={() => handleMuaNgay(sanPham)}>Mua ngay</button>
-                <FaShoppingCart className="cart-icon"  onClick={() => handleMuaNgay(sanPham)}/>
+                <button className="mua-ngay-button" onClick={handleMuaNgay}>Mua ngay</button>
+                <FaShoppingCart className="cart-icon" onClick={handleMuaNgay} />
+
             </div>
         </div>
         </div>
-        
+                {openDialogCart && selectedVariant && (
+            <DialogAddToCart
+              sanPham={sanPham}
+              bienThe={selectedVariant}
+              onClose={() => setOpenDialogCart(false)}
+            />
+          )}
+
     </div>
     );
 

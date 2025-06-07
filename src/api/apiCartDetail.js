@@ -1,37 +1,37 @@
-const API_BASE = 'https://localhost:7265/api/ChiTietGioHang'; // Thay "port" bằng đúng port bạn đang dùng
+const API_CART = 'https://localhost:7265/api/GioHang';
+const API_CART_DETAIL = 'https://localhost:7265/api/ChiTietGioHang';
 
-// GET: Lấy chi tiết giỏ hàng theo mã giỏ hàng
+// 1. Lấy chi tiết giỏ hàng theo mã giỏ hàng (GET api/ChiTietGioHang/{maGioHang})
 export const getCartItems = async (maGioHang) => {
-  const response = await fetch(`${API_BASE}/${maGioHang}`);
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(errorText || 'Không thể lấy chi tiết giỏ hàng.');
+  try {
+    const res = await fetch(`${API_CART_DETAIL}/${maGioHang}`);
+    if (!res.ok) throw new Error("Lỗi khi lấy chi tiết giỏ hàng");
+    const data = await res.json();
+    return Array.isArray(data) ? data : [];  
+  } catch (err) {
+    console.error(err);
+    return []; 
   }
-  return response.json(); // Trả về danh sách ChiTietGioHang
 };
+
+
+// 2. Lấy mã biến thể theo params (GET api/ChiTietGioHang/ma-bien-the?maSanPham=...&mauSac=...&kichThuoc=...)
 export const getMaBienThe = async (maSanPham, mauSac, kichThuoc) => {
-  const url = `${API_BASE}/ma-bien-the?maSanPham=${encodeURIComponent(maSanPham)}&mauSac=${encodeURIComponent(mauSac)}&kichThuoc=${encodeURIComponent(kichThuoc)}`;
-  
+  const url = `${API_CART_DETAIL}/ma-bien-the?maSanPham=${encodeURIComponent(maSanPham)}&mauSac=${encodeURIComponent(mauSac)}&kichThuoc=${encodeURIComponent(kichThuoc)}`;
   const response = await fetch(url);
-  
   if (!response.ok) {
     const errorText = await response.text();
     throw new Error(errorText || 'Không thể lấy mã biến thể.');
   }
-
   const data = await response.json();
-  return data.maBienThe; // Trả về đúng { maBienThe: '...' }
+  return data.maBienThe;
 };
 
-
-
-// POST: Thêm sản phẩm vào giỏ hàng
+// 3. Thêm sản phẩm vào giỏ hàng (POST api/GioHang/addToCart)
 export const addToCart = async (item) => {
-  const response = await fetch(API_BASE, {
+  const response = await fetch(`${API_CART_DETAIL}/addToCart`, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(item),
   });
 
@@ -40,30 +40,25 @@ export const addToCart = async (item) => {
     throw new Error(errorText || 'Thêm vào giỏ hàng thất bại.');
   }
 
-  return response.text(); // Trả về thông báo từ server
+  return response.json(); // Trả về object chứa thông tin giỏ hàng và chi tiết vừa thêm
 };
-// GET: Lấy thông tin chi tiết biến thể sản phẩm theo maBienThe
+
+// 4. Lấy chi tiết biến thể sản phẩm theo mã biến thể (GET api/ChiTietGioHang/bienthe/{maBienThe})
 export const getBienTheTheoMaBienThe = async (maBienThe) => {
-  const url = `${API_BASE}/bienthe/${encodeURIComponent(maBienThe)}`;
-  
+  const url = `${API_CART_DETAIL}/bienthe/${encodeURIComponent(maBienThe)}`;
   const response = await fetch(url);
-  
   if (!response.ok) {
     const errorText = await response.text();
     throw new Error(errorText || 'Không thể lấy chi tiết biến thể sản phẩm.');
   }
-
-  return response.json(); // Trả về chi tiết biến thể (ChiTietSanPham)
+  return response.json();
 };
 
-
-// PUT: Cập nhật số lượng sản phẩm trong giỏ hàng
+// 5. Cập nhật số lượng sản phẩm trong giỏ hàng (PUT api/ChiTietGioHang)
 export const updateCartItemQuantity = async (item) => {
-  const response = await fetch(API_BASE, {
+  const response = await fetch(API_CART_DETAIL, {
     method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(item),
   });
 
@@ -75,12 +70,10 @@ export const updateCartItemQuantity = async (item) => {
   return response.text();
 };
 
-// DELETE: Xóa một sản phẩm khỏi giỏ hàng
+// 6. Xóa một sản phẩm khỏi giỏ hàng (DELETE api/ChiTietGioHang?maGioHang=...&maBienThe=...)
 export const removeFromCart = async (maGioHang, maBienThe) => {
-  const url = `${API_BASE}?maGioHang=${maGioHang}&maBienThe=${maBienThe}`;
-  const response = await fetch(url, {
-    method: 'DELETE',
-  });
+  const url = `${API_CART_DETAIL}?maGioHang=${encodeURIComponent(maGioHang)}&maBienThe=${encodeURIComponent(maBienThe)}`;
+  const response = await fetch(url, { method: 'DELETE' });
 
   if (!response.ok) {
     const errorText = await response.text();

@@ -21,12 +21,25 @@
 
 .cart-item {
   display: flex;
-  align-items: center;
-  padding: 1rem 0;
   gap: 1rem;
   border-bottom: 1px solid #eee;
+   position: relative;
+  align-items: center;
+  padding: 10px;
+}
+.delete-button {
+  background: none;
+  border: none;
+  color: #d11a2a;
+  cursor: pointer;
+  margin-left: 10px;
+  font-size: 18px;
+  transition: color 0.2s;
 }
 
+.delete-button:hover {
+  color: #a00;
+}
 .cart-item img {
   width: 80px;
   height: 80px;
@@ -137,3 +150,49 @@
   cursor: pointer;
   font-size: 16px;
 }
+
+.delete-all-btn {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-left: auto; /* đẩy nút về phía phải */
+  background-color: #fff;
+  border: 1px solid red;
+  color: red;
+  padding: 6px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  gap: 6px;
+  transition: background-color 0.3s ease;
+}
+
+.delete-all-btn svg {
+  color: red; /* icon màu đỏ */
+}
+
+.delete-all-btn:hover {
+  background-color: red;
+  color: white;
+}
+
+.delete-all-btn:hover svg {
+  color: white; /* đổi icon thành trắng khi hover */
+}
+.low-stock {
+  color: orange;
+  font-size: 12px;
+  font-style: italic;
+  position: absolute;
+  right: 45px;
+  top: 59px;
+}
+
+.stock-warning {
+  color: red;
+  font-size: 12px;
+  font-style: italic;
+  position: absolute;
+  right: 45px;
+  top: 59px;
+}
+

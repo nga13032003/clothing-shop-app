@@ -23,45 +23,47 @@ const App = ({ children }) => {
  const [cartCount, setCartCount] = useState(0);
   const [cartItems, setCartItems] = useState([]);
   
-  // Hàm cập nhật giỏ hàng và số lượng
-  const fetchCartData = async () => {
-    const khachHangStr = localStorage.getItem('khachHang');
-    if (!khachHangStr) {
+  const [cartUpdateTrigger, setCartUpdateTrigger] = useState(0);
+
+const fetchCartData = async () => {
+  const khachHangStr = localStorage.getItem('khachHang');
+  if (!khachHangStr) {
+    setCartCount(0);
+    setCartItems([]);
+    return;
+  }
+  const khachHang = JSON.parse(khachHangStr);
+  const maKhachHang = khachHang.maKH;
+
+  try {
+    const gioHang = await getGioHangByKhachHang(maKhachHang);
+    if (gioHang && gioHang.length > 0) {
+      const maGioHang = gioHang[0].maGioHang;
+      const items = await getCartItems(maGioHang);
+      setCartItems(items);
+      setCartCount(items.length);
+    } else {
       setCartCount(0);
       setCartItems([]);
-      return;
     }
-    const khachHang = JSON.parse(khachHangStr);
-    const maKhachHang = khachHang.maKH;
+  } catch (error) {
+    console.error('Lỗi khi lấy giỏ hàng:', error);
+  }
+};
 
-    try {
-      const gioHang = await getGioHangByKhachHang(maKhachHang);
-      if (gioHang && gioHang.length > 0) {
-        const maGioHang = gioHang[0].maGioHang;
-        const items = await getCartItems(maGioHang);
-        setCartItems(items);
-        const totalQuantity = items.reduce((sum, item) => sum + item.soLuong, 0);
-        setCartCount(totalQuantity);
-      } else {
-        setCartCount(0);
-        setCartItems([]);
-      }
-    } catch (error) {
-      console.error('Lỗi khi lấy giỏ hàng:', error);
-    }
-  };
 
   useEffect(() => {
-    const khachHang = localStorage.getItem('khachHang');
-    if (khachHang) {
-      setIsLoggedIn(true);
-      fetchCartData();  // Lấy dữ liệu giỏ hàng khi đăng nhập
-    } else {
-      setIsLoggedIn(false);
-      setCartCount(0);
-      setCartItems([]);
-    }
-  }, []);
+  const khachHang = localStorage.getItem('khachHang');
+  if (khachHang) {
+    setIsLoggedIn(true);
+    fetchCartData();
+  } else {
+    setIsLoggedIn(false);
+    setCartCount(0);
+    setCartItems([]);
+  }
+}, [cartUpdateTrigger]); 
+
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
@@ -167,9 +169,18 @@ const App = ({ children }) => {
       </Header>
 
       <Content className="content">
-        <div>{children}</div>
-           <ChatBox />
-      </Content>
+          <div>{React.Children.map(children, (child) =>
+            React.cloneElement(child, {
+              fetchCartData,
+              cartCount,
+              cartItems,
+              setCartUpdateTrigger, 
+            })
+          )}
+          </div>
+          <ChatBox />
+        </Content>
+
 
       <CustomFooter />
     </Layout>
