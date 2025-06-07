@@ -24,6 +24,7 @@ import ResetPassword from './template/Auth/resetPassword';
 import MyProfile from './template/Auth/myProfile';
 import CheckoutPage from './template/CheckOut/checkOut';
 import OrderSuccessPage from './template/CheckOut/OrderSuccessPage';
+import ChiTietDonHang from './template/CheckOut/ChiTietDonHang';
 
 const root = createRoot(document.getElementById('root'));
 const basename = '/clothing-shop-app';
@@ -53,6 +54,7 @@ root.render(
           <Route path='/cart-item' element={<App><CartPage/></App>}/>
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path='/don-hang-cua-toi' element={<App><OrderSuccessPage/></App>}/>
+          <Route path='/chi-tiet-don-hang' element={<App><ChiTietDonHang/></App>}/>
             
         </Routes>
       </BrowserRouter>
