@@ -3,12 +3,24 @@ const API_BASE = 'https://localhost:7265/api/GioHang'; // Thay `port` bằng đ�
 // GET: Lấy giỏ hàng theo mã khách hàng
 export const getGioHangByKhachHang = async (maKhachHang) => {
   const response = await fetch(`${API_BASE}/khachhang/${maKhachHang}`);
+
+  if (response.status === 404) {
+    // Backend trả về lỗi 404 với nội dung text mô tả lỗi
+    const errorText = await response.text();
+    // Bạn có thể log hoặc xử lý theo ý muốn, ở đây trả về null hoặc throw
+    // return null; // nếu bạn muốn trả về null khi ko có giỏ hàng
+    throw new Error(errorText || 'Giỏ hàng trống hoặc không tồn tại.');
+  }
+
   if (!response.ok) {
     const errorText = await response.text();
     throw new Error(errorText || 'Không thể lấy giỏ hàng.');
   }
+
   return response.json();
 };
+
+
 
 // POST: Thêm giỏ hàng mới
 export const createGioHang = async (gioHang) => {

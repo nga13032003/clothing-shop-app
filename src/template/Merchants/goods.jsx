@@ -7,6 +7,7 @@ import './goods.css';
 import { useNavigate } from 'react-router-dom';
 import DialogAddToCart from '../Cart/dialogAddToCart';
 import { getCartItems } from '../../api/apiCartDetail';
+import { toast } from 'react-toastify';
 
 const SanPhamPage = () => {
   const [sanPhamList, setSanPhamList] = useState([]);
@@ -22,6 +23,12 @@ const SanPhamPage = () => {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const navigate = useNavigate();
  const [cartItems, setCartItems] = useState([]);
+ const [cartUpdateTrigger, setCartUpdateTrigger] = useState(0);
+
+ useEffect(() => {
+  fetchCartData();
+}, [cartUpdateTrigger]);
+
 
   // Hàm fetch lại giỏ hàng (bạn có thể gọi sau khi thêm thành công)
   const fetchCartData = async () => {
@@ -65,16 +72,18 @@ const SanPhamPage = () => {
     fetchTatCaSanPham();
   }, []);
 
- const handleMuaNgay = (sanPham) => {
-  const isLoggedIn = !!localStorage.getItem('employeeCode');
-
+const handleMuaNgay = (event, sp) => {
+  event.stopPropagation(); // ngăn sự kiện click nổi lên phần tử cha
+  const isLoggedIn = !!localStorage.getItem('khachHang');
   if (!isLoggedIn) {
     navigate('/login');
   } else {
-    // Tuỳ ý chuyển trang hoặc thêm vào giỏ hàng
-    navigate(`/product/${sanPham.maSanPham}`);
+    setSelectedSanPham(sp); // gán sản phẩm được chọn
+    setOpenDialog(true);    // mở dialog
   }
 };
+
+
 
 
   const indexOfLastProduct = currentPage * sanPhamPerPage;
@@ -111,10 +120,11 @@ const SanPhamPage = () => {
           <div className="san-pham-actions" onClick={(e) => e.stopPropagation()}>
            <button
               className="mua-ngay-button"
-              onClick={() => handleMuaNgay(sp)}
+              onClick={(e) => handleMuaNgay(e, sp)}
             >
               Mua ngay
             </button>
+
 
                         <FaShoppingCart
               className="cart-icon"
@@ -143,6 +153,7 @@ const SanPhamPage = () => {
           sanPham={selectedSanPham}
           onClose={() => setOpenDialog(false)}
           fetchCartData={fetchCartData} // truyền hàm fetch lại giỏ hàng
+          setCartUpdateTrigger={setCartUpdateTrigger}
         />
       )}
 
