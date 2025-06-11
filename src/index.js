@@ -20,6 +20,9 @@ import NewsPage from './template/info/new';
 import CartPage from './template/Cart/detailCart';
 import DialogAddToCart from './template/Cart/dialogAddToCart';
 import CheckoutPage from './template/CheckOut/checkOut';
+import OrderSuccessPage from './template/CheckOut/OrderSuccessPage';
+import ChiTietDonHang from './template/CheckOut/ChiTietDonHang';
+
 
 const root = createRoot(document.getElementById('root'));
 const basename = '/clothing-shop-app';
@@ -45,6 +48,10 @@ root.render(
 
           <Route path="/news" element={<App><NewsPage /></App>} />
           <Route path='/cart-item' element={<App><CartPage/></App>}/>
+          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path='/don-hang-cua-toi' element={<App><OrderSuccessPage/></App>}/>
+          <Route path='/chi-tiet-don-hang' element={<App><ChiTietDonHang/></App>}/>
+            
         </Routes>
       </BrowserRouter>
     </GoogleOAuthProvider>
