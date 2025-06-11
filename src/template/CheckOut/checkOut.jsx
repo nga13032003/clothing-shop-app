@@ -1,186 +1,303 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './checkout.css';
-import { UserOutlined, EnvironmentOutlined, CreditCardOutlined, FileTextOutlined, EditOutlined } from '@ant-design/icons';
-
-const mockSelectedCart = [
-  {
-    maBienThe: 'bt01',
-    tenSanPham: 'Áo thun nam',
-    mauSac: 'Đen',
-    size: 'M',
-    gia: 150000,
-    soLuong: 2,
-    hinhAnhUrl: 'https://via.placeholder.com/100x100?text=Aothun',
-  },
-  {
-    maBienThe: 'bt02',
-    tenSanPham: 'Quần jean nữ',
-    mauSac: 'Xanh',
-    size: 'L',
-    gia: 350000,
-    soLuong: 1,
-    hinhAnhUrl: 'https://via.placeholder.com/100x100?text=QuanJeans',
-  },
-];
-
-const mockTransportOptions = [
-  { id: 'ghn', name: 'Giao hàng nhanh', fee: 30000, estimatedDelivery: '2-3 ngày' },
-  { id: 'ghtk', name: 'Giao hàng tiết kiệm', fee: 20000, estimatedDelivery: '3-5 ngày' },
-  { id: 'vnp', name: 'Viettel Post', fee: 25000, estimatedDelivery: '2-4 ngày' },
-];
-
-const mockPromoCodes = [
-  { code: 'GIAM20', discount: 20000, description: 'Giảm 20.000 ₫ cho đơn từ 200.000 ₫' },
-  { code: 'FREESHIP', discount: 30000, description: 'Miễn phí vận chuyển' },
-  { code: 'SALE10', discount: 10000, description: 'Giảm 10.000 ₫ cho mọi đơn hàng' },
-];
+import { FaTrash } from 'react-icons/fa';
+import { UserOutlined, EnvironmentOutlined, CreditCardOutlined, EditOutlined } from '@ant-design/icons';
+import { datHang, getDiaChiKhachHang, getKhuyenMai, getPhuongThucThanhToan, getDonViVanChuyen, addDiaChiKhachHang, updateDiaChiKhachHang, deleteDiaChiKhachHang } from '../../api/apiCheckOut';
 
 const CheckoutPage = () => {
   const navigate = useNavigate();
   const [selectedCart, setSelectedCart] = useState([]);
-  const [address, setAddress] = useState({
-    fullName: 'Nguyễn Văn A',
-    phone: '0912345678',
-    city: 'Hồ Chí Minh',
-    district: 'Quận 1',
-    ward: 'Phường Bến Nghé',
-    street: '123 Đường Lê Lợi',
-    note: 'Giao giờ hành chính',
-  });
+  const [addresses, setAddresses] = useState([]);
+  const [selectedAddress, setSelectedAddress] = useState(null);
   const [isEditingAddress, setIsEditingAddress] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState('cod');
-  const [errors, setErrors] = useState({});
-  const [promoCode, setPromoCode] = useState('');
+  const [editingAddressId, setEditingAddressId] = useState(null);
+  const [newAddress, setNewAddress] = useState({
+    fullName: '',
+    phone: '',
+    city: '',
+    district: '',
+    ward: '',
+    street: '',
+    note: '',
+  });
+  const [paymentMethods, setPaymentMethods] = useState([]);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
+  const [transportUnits, setTransportUnits] = useState([]);
+  const [selectedTransport, setSelectedTransport] = useState(null);
+  const [promoCodes, setPromoCodes] = useState([]);
   const [selectedPromo, setSelectedPromo] = useState(null);
   const [showPromoDialog, setShowPromoDialog] = useState(false);
   const [discount, setDiscount] = useState(0);
-  const [usePoints, setUsePoints] = useState(false);
-  const [pointsDiscount, setPointsDiscount] = useState(0);
-  const [availablePoints] = useState(500); // Giả lập điểm hiện tại
-  const [selectedTransport, setSelectedTransport] = useState(null);
-  const [showTransportDialog, setShowTransportDialog] = useState(false);
-  const [showQRDialog, setShowQRDialog] = useState(false);
+  const [errors, setErrors] = useState({});
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+  const [expandedAddressId, setExpandedAddressId] = useState(null);
+  
+
+
+  // Lấy thông tin khách hàng từ localStorage
+  const khachHangStr = localStorage.getItem('khachHang');
+  const khachHang = khachHangStr ? JSON.parse(khachHangStr) : null;
 
   useEffect(() => {
-    setSelectedCart(mockSelectedCart);
-    setSelectedTransport(mockTransportOptions[0]);
+    // Lấy danh sách sản phẩm đã chọn từ giỏ hàng
+    const cart = JSON.parse(localStorage.getItem('selectedCart')) || [];
+    setSelectedCart(cart);
+
+    // Lấy danh sách địa chỉ của khách hàng
+    const fetchAddresses = async () => {
+      try {
+        const response = await getDiaChiKhachHang(khachHang.maKH);
+        setAddresses(response);
+        const defaultAddress = response.find(addr => addr.macDinh) || response[0];
+        setSelectedAddress(defaultAddress);
+      } catch (error) {
+        console.error('Lỗi khi lấy địa chỉ:', error);
+      }
+    };
+
+    // Lấy danh sách phương thức thanh toán
+    const fetchPaymentMethods = async () => {
+      try {
+        const response = await getPhuongThucThanhToan();
+        setPaymentMethods(response);
+        setSelectedPaymentMethod(response[0]?.maTT);
+      } catch (error) {
+        console.error('Lỗi khi lấy phương thức thanh toán:', error);
+      }
+    };
+
+    // Lấy danh sách đơn vị vận chuyển
+    const fetchTransportUnits = async () => {
+      try {
+        const response = await getDonViVanChuyen();
+        setTransportUnits(response);
+        setSelectedTransport(response[0]);
+      } catch (error) {
+        console.error('Lỗi khi lấy đơn vị vận chuyển:', error);
+      }
+    };
+
+    // Lấy danh sách mã khuyến mãi
+    const fetchPromoCodes = async () => {
+      try {
+        const response = await getKhuyenMai();
+        setPromoCodes(response);
+      } catch (error) {
+        console.error('Lỗi khi lấy mã khuyến mãi:', error);
+      }
+    };
+
+    if (khachHang) {
+      fetchAddresses();
+      fetchPaymentMethods();
+      fetchTransportUnits();
+      fetchPromoCodes();
+    }
   }, []);
 
+  // Tính tổng tiền hàng
   const getTotalPrice = () => {
     return selectedCart.reduce((sum, item) => sum + item.soLuong * item.gia, 0);
   };
 
-  const handleChange = (e) => {
-    setAddress({ ...address, [e.target.name]: e.target.value });
+  // Xử lý thay đổi địa chỉ
+  const handleAddressChange = (e) => {
+    setNewAddress({ ...newAddress, [e.target.name]: e.target.value });
   };
 
-  const validate = () => {
+  // Xử lý chọn địa chỉ
+  const handleSelectAddress = (address) => {
+    setSelectedAddress(address);
+    setIsEditingAddress(false);
+    setEditingAddressId(null);
+    setNewAddress({
+      fullName: '',
+      phone: '',
+      city: '',
+      district: '',
+      ward: '',
+      street: '',
+      note: '',
+    });
+  };
+
+  // Xử lý chỉnh sửa địa chỉ
+  const handleEditAddress = (address) => {
+    setIsEditingAddress(true);
+    setEditingAddressId(address.maDiaChi);
+    setNewAddress({
+      fullName: address.hoTenNguoiNhan,
+      phone: address.sdtNguoiNhan,
+      city: address.tinhTP,
+      district: address.huyenQuan,
+      ward: address.xaPhuong,
+      street: address.diaChiCuThe,
+      note: address.ghiChu || '',
+    });
+  };
+
+  // Xử lý xóa địa chỉ
+  const handleDeleteAddress = async (maDiaChi) => {
+    if (window.confirm('Bạn có chắc chắn muốn xóa địa chỉ này?')) {
+      try {
+        await deleteDiaChiKhachHang(maDiaChi);
+        const updatedAddresses = addresses.filter(addr => addr.maDiaChi !== maDiaChi);
+        setAddresses(updatedAddresses);
+        if (selectedAddress?.maDiaChi === maDiaChi) {
+          const defaultAddress = updatedAddresses.find(addr => addr.macDinh) || updatedAddresses[0] || null;
+          setSelectedAddress(defaultAddress);
+        }
+        alert('Xóa địa chỉ thành công!');
+      } catch (error) {
+        console.error('Lỗi khi xóa địa chỉ:', error);
+        alert(error.message || 'Đã có lỗi xảy ra khi xóa địa chỉ');
+      }
+    }
+  };
+
+  // Xử lý lưu địa chỉ (thêm mới hoặc cập nhật)
+  const handleSaveAddress = async () => {
+    if (!validateNewAddress()) return;
+
+    try {
+      if (editingAddressId) {
+        // Cập nhật địa chỉ
+        const updatedAddress = {
+          maDiaChi: editingAddressId,
+          hoTenNguoiNhan: newAddress.fullName,
+          sdtNguoiNhan: newAddress.phone,
+          tinhTP: newAddress.city,
+          huyenQuan: newAddress.district,
+          xaPhuong: newAddress.ward,
+          diaChiCuThe: newAddress.street,
+          ghiChu: newAddress.note,
+          macDinh: selectedAddress?.maDiaChi === editingAddressId ? selectedAddress.macDinh : false,
+        };
+        await updateDiaChiKhachHang(updatedAddress);
+        const updatedAddresses = addresses.map(addr =>
+          addr.maDiaChi === editingAddressId ? updatedAddress : addr
+        );
+        setAddresses(updatedAddresses);
+        setSelectedAddress(updatedAddress);
+        alert('Cập nhật địa chỉ thành công!');
+      } else {
+        // Thêm địa chỉ mới
+        const newAddr = {
+          maKH: khachHang.maKH,
+          hoTenNguoiNhan: newAddress.fullName,
+          sdtNguoiNhan: newAddress.phone,
+          tinhTP: newAddress.city,
+          huyenQuan: newAddress.district,
+          xaPhuong: newAddress.ward,
+          diaChiCuThe: newAddress.street,
+          ghiChu: newAddress.note,
+          macDinh: addresses.length === 0, // Đặt mặc định nếu là địa chỉ đầu tiên
+        };
+        const response = await addDiaChiKhachHang(newAddr);
+        setAddresses([...addresses, response]);
+        setSelectedAddress(response);
+        alert('Thêm địa chỉ thành công!');
+      }
+      setIsEditingAddress(false);
+      setEditingAddressId(null);
+      setNewAddress({
+        fullName: '',
+        phone: '',
+        city: '',
+        district: '',
+        ward: '',
+        street: '',
+        note: '',
+      });
+    } catch (error) {
+      console.error('Lỗi khi lưu địa chỉ:', error);
+      alert(error.message || 'Đã có lỗi xảy ra khi lưu địa chỉ');
+    }
+  };
+
+  // Xử lý chọn đơn vị vận chuyển
+  const handleSelectTransport = (transport) => {
+    setSelectedTransport(transport);
+  };
+
+  // Xử lý chọn mã khuyến mãi
+  const handleSelectPromo = (promo) => {
+    setSelectedPromo(promo);
+    setDiscount(promo.phanTramGiam ? (getTotalPrice() * promo.phanTramGiam) / 100 : 0);
+    setShowPromoDialog(false);
+  };
+
+  // Xử lý chọn phương thức thanh toán
+  const handlePaymentMethodChange = (maTT) => {
+    setSelectedPaymentMethod(maTT);
+  };
+
+  // Xử lý đặt hàng
+  const handlePlaceOrder = async () => {
     let newErrors = {};
-    if (!address.fullName.trim()) newErrors.fullName = 'Họ tên không được để trống';
-    if (!address.phone.trim()) newErrors.phone = 'Số điện thoại không được để trống';
-    else if (!/^(0|\+84)[0-9]{9,10}$/.test(address.phone)) newErrors.phone = 'Số điện thoại không hợp lệ';
-    if (!address.city.trim()) newErrors.city = 'Tỉnh/Thành phố không được để trống';
-    if (!address.district.trim()) newErrors.district = 'Quận/Huyện không được để trống';
-    if (!address.ward.trim()) newErrors.ward = 'Phường/Xã không được để trống';
-    if (!address.street.trim()) newErrors.street = 'Địa chỉ cụ thể không được để trống';
+    if (!selectedAddress) {
+      newErrors.address = 'Vui lòng chọn địa chỉ giao hàng';
+    }
+    if (!selectedPaymentMethod) {
+      newErrors.paymentMethod = 'Vui lòng chọn phương thức thanh toán';
+    }
+    if (!selectedTransport) {
+      newErrors.transport = 'Vui lòng chọn đơn vị vận chuyển';
+    }
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) {
+      return;
+    }
+
+    setIsProcessingPayment(true);
+    try {
+      const request = {
+        maKH: khachHang.maKH,
+        maNV: 'NV001',
+        maDiaChi: selectedAddress.maDiaChi,
+        maKM: selectedPromo ? selectedPromo.maKM : null,
+        maPTTT: selectedPaymentMethod,
+        maDVVC: selectedTransport.maDVVC,
+        ghiChu: newAddress.note || selectedAddress.ghiChu || '',
+        sanPhams: selectedCart.map(item => ({
+          maBienThe: item.maBienThe,
+          soLuong: item.soLuong,
+          giaBan: item.gia,
+          giamGia: selectedPromo && selectedPromo.phanTramGiam ? (item.gia * item.soLuong * selectedPromo.phanTramGiam) / 100 : 0,
+        })),
+      };
+
+      const response = await datHang(request);
+      localStorage.removeItem('selectedCart');
+      alert(response.message || 'Đặt hàng thành công!');
+      navigate('/don-hang-cua-toi');
+    } catch (error) {
+      console.error('Lỗi khi đặt hàng:', error);
+      alert(error.message || 'Đã có lỗi xảy ra khi đặt hàng');
+    } finally {
+      setIsProcessingPayment(false);
+    }
+  };
+
+  // Validate form địa chỉ mới
+  const validateNewAddress = () => {
+    let newErrors = {};
+    if (!newAddress.fullName.trim()) newErrors.fullName = 'Họ tên không được để trống';
+    if (!newAddress.phone.trim()) newErrors.phone = 'Số điện thoại không được để trống';
+    else if (!/^(0|\+84)[0-9]{9,10}$/.test(newAddress.phone)) newErrors.phone = 'Số điện thoại không hợp lệ';
+    if (!newAddress.city.trim()) newErrors.city = 'Tỉnh/Thành phố không được để trống';
+    if (!newAddress.district.trim()) newErrors.district = 'Quận/Huyện không được để trống';
+    if (!newAddress.ward.trim()) newErrors.ward = 'Phường/Xã không được để trống';
+    if (!newAddress.street.trim()) newErrors.street = 'Địa chỉ cụ thể không được để trống';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleApplyPromo = () => {
-    if (selectedPromo) {
-      setDiscount(selectedPromo.discount);
-      setPromoCode(selectedPromo.code);
-      setShowPromoDialog(false);
-    } else if (promoCode === 'GIAM20') {
-      setDiscount(20000);
-      setShowPromoDialog(false);
-    } else {
-      alert('Mã khuyến mãi không hợp lệ!');
-    }
-  };
-
-  const handleSelectPromo = (promo) => {
-    setSelectedPromo(promo);
-    setPromoCode(promo.code);
-  };
-
-  const handleUsePoints = () => {
-    setUsePoints(!usePoints);
-    setPointsDiscount(!usePoints ? 10000 : 0);
-  };
-
-  const handlePaymentMethodChange = (method) => {
-    setPaymentMethod(method);
-    if (method === 'eInvoice') {
-      setShowQRDialog(true);
-    } else {
-      setShowQRDialog(false);
-    }
-  };
-
-  const handleConfirmPayment = () => {
-    if (!validate()) return;
-
-    setIsProcessingPayment(true);
-    // Giả lập kiểm tra thanh toán (3 giây)
-    setTimeout(() => {
-      setIsProcessingPayment(false);
-      const order = {
-        id: `ORDER-${Date.now()}`,
-        cart: selectedCart,
-        address,
-        paymentMethod,
-        totalPrice: getTotalPrice(),
-        shippingFee: selectedTransport?.fee || 0,
-        discount: discount + pointsDiscount,
-        finalPrice: getTotalPrice() + (selectedTransport?.fee || 0) - (discount + pointsDiscount),
-        timestamp: new Date().toISOString(),
-      };
-
-      // Lưu hóa đơn vào localStorage (giả lập cơ sở dữ liệu)
-      const existingOrders = JSON.parse(localStorage.getItem('orders') || '[]');
-      localStorage.setItem('orders', JSON.stringify([...existingOrders, order]));
-
-      alert('Thanh toán thành công! Hóa đơn đã được ghi nhận.');
-      localStorage.removeItem('selectedCart');
-      setShowQRDialog(false);
-      navigate('/don-hang-cua-toi');
-    }, 3000);
-  };
-
-  const handlePlaceOrder = () => {
-    if (!validate()) return;
-    if (paymentMethod === 'eInvoice') {
-      setShowQRDialog(true);
-    } else {
-      const order = {
-        id: `ORDER-${Date.now()}`,
-        cart: selectedCart,
-        address,
-        paymentMethod,
-        totalPrice: getTotalPrice(),
-        shippingFee: selectedTransport?.fee || 0,
-        discount: discount + pointsDiscount,
-        finalPrice: getTotalPrice() + (selectedTransport?.fee || 0) - (discount + pointsDiscount),
-        timestamp: new Date().toISOString(),
-      };
-
-      // Lưu hóa đơn vào localStorage (giả lập cơ sở dữ liệu)
-      const existingOrders = JSON.parse(localStorage.getItem('orders') || '[]');
-      localStorage.setItem('orders', JSON.stringify([...existingOrders, order]));
-
-      alert('Đặt hàng thành công!');
-      localStorage.removeItem('selectedCart');
-      navigate('/don-hang-cua-toi');
-    }
-  };
-
+  // Tính toán tổng tiền
   const totalPrice = getTotalPrice();
-  const shippingFee = selectedTransport ? selectedTransport.fee : 0;
-  const totalDiscount = discount + pointsDiscount;
+  const shippingFee = selectedTransport ? selectedTransport.phiVanChuyen : 0;
+  const totalDiscount = discount;
   const finalPrice = totalPrice + shippingFee - totalDiscount;
 
   if (selectedCart.length === 0) {
@@ -205,8 +322,8 @@ const CheckoutPage = () => {
                 <input
                   type="text"
                   name="fullName"
-                  value={address.fullName}
-                  onChange={handleChange}
+                  value={newAddress.fullName}
+                  onChange={handleAddressChange}
                   className={errors.fullName ? 'input-error' : ''}
                   placeholder="Nguyễn Văn A"
                 />
@@ -217,8 +334,8 @@ const CheckoutPage = () => {
                 <input
                   type="text"
                   name="phone"
-                  value={address.phone}
-                  onChange={handleChange}
+                  value={newAddress.phone}
+                  onChange={handleAddressChange}
                   className={errors.phone ? 'input-error' : ''}
                   placeholder="0xxxxxxxxx"
                 />
@@ -229,8 +346,8 @@ const CheckoutPage = () => {
                 <input
                   type="text"
                   name="city"
-                  value={address.city}
-                  onChange={handleChange}
+                  value={newAddress.city}
+                  onChange={handleAddressChange}
                   className={errors.city ? 'input-error' : ''}
                   placeholder="Hồ Chí Minh"
                 />
@@ -241,8 +358,8 @@ const CheckoutPage = () => {
                 <input
                   type="text"
                   name="district"
-                  value={address.district}
-                  onChange={handleChange}
+                  value={newAddress.district}
+                  onChange={handleAddressChange}
                   className={errors.district ? 'input-error' : ''}
                   placeholder="Quận 1"
                 />
@@ -253,8 +370,8 @@ const CheckoutPage = () => {
                 <input
                   type="text"
                   name="ward"
-                  value={address.ward}
-                  onChange={handleChange}
+                  value={newAddress.ward}
+                  onChange={handleAddressChange}
                   className={errors.ward ? 'input-error' : ''}
                   placeholder="Phường Bến Nghé"
                 />
@@ -265,8 +382,8 @@ const CheckoutPage = () => {
                 <input
                   type="text"
                   name="street"
-                  value={address.street}
-                  onChange={handleChange}
+                  value={newAddress.street}
+                  onChange={handleAddressChange}
                   className={errors.street ? 'input-error' : ''}
                   placeholder="Số nhà, tên đường"
                 />
@@ -276,24 +393,157 @@ const CheckoutPage = () => {
                 Ghi chú (không bắt buộc)
                 <textarea
                   name="note"
-                  value={address.note}
-                  onChange={handleChange}
+                  value={newAddress.note}
+                  onChange={handleAddressChange}
                   placeholder="Ví dụ: giao giờ hành chính"
                 />
               </label>
-              <button className="save-btn" onClick={() => setIsEditingAddress(false)}>Lưu</button>
+              <div className="address-actions">
+                <button
+                  className="save-btn"
+                  onClick={handleSaveAddress}
+                >
+                  {editingAddressId ? 'Cập nhật' : 'Lưu'}
+                </button>
+                <button
+                  className="cancel-btn"
+                  onClick={() => {
+                    setIsEditingAddress(false);
+                    setEditingAddressId(null);
+                    setNewAddress({
+                      fullName: '',
+                      phone: '',
+                      city: '',
+                      district: '',
+                      ward: '',
+                      street: '',
+                      note: '',
+                    });
+                    setErrors({});
+                  }}
+                >
+                  Hủy
+                </button>
+              </div>
             </>
           ) : (
             <div className="address-display">
-              <p>{address.fullName} - {address.phone}</p>
-              <p>{address.street}, {address.ward}, {address.district}, {address.city}</p>
-              <p>Ghi chú: {address.note || 'Không có'}</p>
-              <button onClick={() => setIsEditingAddress(true)}>
-                <EditOutlined /> Chỉnh sửa
+              {addresses.map((address) => (
+                <div key={address.maDiaChi} className="address-item">
+                  <div className="address-header">
+                    <input
+                      type="radio"
+                      checked={selectedAddress?.maDiaChi === address.maDiaChi}
+                      onChange={() => handleSelectAddress(address)}
+                    />
+                    <span className="address-info">
+                      {address.hoTenNguoiNhan}, {address.sdtNguoiNhan}, {address.diaChiCuThe}, {address.xaPhuong}, {address.huyenQuan}, {address.tinhTP}
+                    </span>
+                    <button className="edit-button" onClick={() => {
+                        if (expandedAddressId === address.maDiaChi) {
+                          setExpandedAddressId(null);
+                        } else {
+                          setExpandedAddressId(address.maDiaChi);
+                          handleEditAddress(address); // Đổ dữ liệu vào newAddress
+                        }
+                      }}
+                      >
+                      <EditOutlined /> Chỉnh sửa
+                    </button>
+                    <button  className="delete-button-dc" onClick={() => handleDeleteAddress(address.maDiaChi)}>
+                          <FaTrash />
+                        </button>
+                  </div>
+
+                  {expandedAddressId === address.maDiaChi && (
+                    <div className="address-edit-form">
+                      <label>
+                        Họ và tên
+                        <input
+                          name="fullName"
+                          value={newAddress.fullName}
+                          onChange={handleAddressChange}
+                        />
+                      </label>
+                      <label>
+                        Số điện thoại
+                        <input
+                          name="phone"
+                          value={newAddress.phone}
+                          onChange={handleAddressChange}
+                        />
+                      </label>
+                      <label>
+                        Tỉnh/Thành phố
+                        <input
+                          name="city"
+                          value={newAddress.city}
+                          onChange={handleAddressChange}
+                        />
+                      </label>
+                      <label>
+                        Quận/Huyện
+                        <input
+                          name="district"
+                          value={newAddress.district}
+                          onChange={handleAddressChange}
+                        />
+                      </label>
+                      <label>
+                        Phường/Xã
+                        <input
+                          name="ward"
+                          value={newAddress.ward}
+                          onChange={handleAddressChange}
+                        />
+                      </label>
+                      <label>
+                        Địa chỉ cụ thể
+                        <input
+                          name="street"
+                          value={newAddress.street}
+                          onChange={handleAddressChange}
+                        />
+                      </label>
+                      <label>
+                        Ghi chú
+                        <textarea
+                          name="note"
+                          value={newAddress.note}
+                          onChange={handleAddressChange}
+                        />
+                      </label>
+                      <div className="address-edit-actions">
+                        <button onClick={handleSaveAddress}>Lưu</button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+
+              <button
+                className="add-address-btn"
+                onClick={() => {
+                  setIsEditingAddress(true);
+                  setEditingAddressId(null);
+                  setNewAddress({
+                    fullName: '',
+                    phone: '',
+                    city: '',
+                    district: '',
+                    ward: '',
+                    street: '',
+                    note: '',
+                  });
+                }}
+              >
+                + Thêm địa chỉ mới
               </button>
+              {errors.address && <small className="error">{errors.address}</small>}
             </div>
           )}
         </div>
+
 
         {/* Danh sách sản phẩm */}
         <div className="checkout-products">
@@ -311,86 +561,52 @@ const CheckoutPage = () => {
           ))}
         </div>
 
+        {/* Đơn vị vận chuyển */}
+        <div className="checkout-transport">
+          <h3>Phương thức vận chuyển</h3>
+          <div className="transport-section">
+            {transportUnits.map(unit => (
+              <label key={unit.maDVVC} className="transport-option">
+                <input
+                  type="radio"
+                  name="transport"
+                  value={unit.maDVVC}
+                  checked={selectedTransport?.maDVVC === unit.maDVVC}
+                  onChange={() => handleSelectTransport(unit)}
+                />
+                <span>{unit.tenDVVC} - Phí: {unit.phiVanChuyen.toLocaleString()} ₫</span>
+              </label>
+            ))}
+            {errors.transport && <small className="error">{errors.transport}</small>}
+          </div>
+        </div>
+
         {/* Mã khuyến mãi */}
         <div className="checkout-promo">
           <h3>Mã khuyến mãi</h3>
           <div className="promo-section">
             <p onClick={() => setShowPromoDialog(true)}>
-              {promoCode ? `Mã: ${promoCode} (-${discount.toLocaleString()} ₫)` : 'Chọn hoặc nhập mã khuyến mãi'}
+              {selectedPromo
+                ? `Mã: ${selectedPromo.tenKM} (-${discount.toLocaleString()} ₫)`
+                : 'Chọn mã khuyến mãi'}
             </p>
             {showPromoDialog && (
               <div className="promo-dialog">
                 <h4>Chọn mã khuyến mãi</h4>
-                {mockPromoCodes.map(promo => (
-                  <label key={promo.code} className="promo-option">
+                {promoCodes.map(promo => (
+                  <label key={promo.maKM} className="promo-option">
                     <input
                       type="radio"
                       name="promo"
-                      checked={selectedPromo?.code === promo.code}
+                      checked={selectedPromo?.maKM === promo.maKM}
                       onChange={() => handleSelectPromo(promo)}
                     />
-                    <span>{promo.code} - {promo.description}</span>
+                    <span>{promo.tenKM} - Giảm {promo.phanTramGiam}%</span>
                   </label>
                 ))}
-                <div className="promo-input">
-                  <input
-                    type="text"
-                    value={promoCode}
-                    onChange={(e) => {
-                      setPromoCode(e.target.value);
-                      setSelectedPromo(null);
-                    }}
-                    placeholder="Nhập mã khuyến mãi"
-                  />
-                </div>
                 <div className="promo-buttons">
-                  <button onClick={handleApplyPromo}>Áp dụng</button>
                   <button onClick={() => setShowPromoDialog(false)}>Hủy</button>
                 </div>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Tích điểm */}
-        <div className="checkout-points">
-          <h3>Sử dụng điểm tích lũy</h3>
-          <label>
-            <input
-              type="checkbox"
-              checked={usePoints}
-              onChange={handleUsePoints}
-            />
-            Dùng điểm tích lũy ({availablePoints} điểm, giảm {pointsDiscount.toLocaleString()} ₫)
-          </label>
-        </div>
-
-        {/* Phương thức vận chuyển */}
-        <div className="checkout-transport">
-          <h3>Phương thức vận chuyển</h3>
-          <div className="transport-section">
-            <p onClick={() => setShowTransportDialog(true)}>
-              {selectedTransport
-                ? `${selectedTransport.name} - ${selectedTransport.estimatedDelivery} (${selectedTransport.fee.toLocaleString()} ₫)`
-                : 'Chọn phương thức vận chuyển'}
-            </p>
-            {showTransportDialog && (
-              <div className="transport-dialog">
-                {mockTransportOptions.map(option => (
-                  <div
-                    key={option.id}
-                    className="transport-option"
-                    onClick={() => {
-                      setSelectedTransport(option);
-                      setShowTransportDialog(false);
-                    }}
-                  >
-                    <p>{option.name}</p>
-                    <p>Phí: {option.fee.toLocaleString()} ₫</p>
-                    <p>Nhận hàng dự kiến: {option.estimatedDelivery}</p>
-                  </div>
-                ))}
-                <button onClick={() => setShowTransportDialog(false)}>Hủy</button>
               </div>
             )}
           </div>
@@ -399,58 +615,20 @@ const CheckoutPage = () => {
         {/* Phương thức thanh toán */}
         <div className="checkout-payment">
           <h3><CreditCardOutlined /> Phương thức thanh toán</h3>
-          <label className="payment-option">
-            <input
-              type="radio"
-              name="paymentMethod"
-              value="cod"
-              checked={paymentMethod === 'cod'}
-              onChange={() => handlePaymentMethodChange('cod')}
-            />
-            Thanh toán khi nhận hàng (COD)
-          </label>
-          <label className="payment-option">
-            <input
-              type="radio"
-              name="paymentMethod"
-              value="eInvoice"
-              checked={paymentMethod === 'eInvoice'}
-              onChange={() => handlePaymentMethodChange('eInvoice')}
-            />
-            Thanh toán hóa đơn điện tử <FileTextOutlined style={{ marginLeft: 6, color: '#3b82f6' }} />
-          </label>
-        </div>
-
-        {/* Dialog mã QR */}
-        {showQRDialog && (
-          <div className="qr-dialog">
-            <div className="qr-dialog-content">
-              <h4>Thanh toán qua chuyển khoản</h4>
-              <img
-                src="https://via.placeholder.com/200x200?text=QR+Code"
-                alt="QR Code"
-                className="qr-code"
+          {paymentMethods.map(method => (
+            <label key={method.maTT} className="payment-option">
+              <input
+                type="radio"
+                name="paymentMethod"
+                value={method.maTT}
+                checked={selectedPaymentMethod === method.maTT}
+                onChange={() => handlePaymentMethodChange(method.maTT)}
               />
-              <div className="bank-info">
-                <p><strong>Ngân hàng:</strong> Vietcombank</p>
-                <p><strong>Số tài khoản:</strong> 1234567890</p>
-                <p><strong>Chủ tài khoản:</strong> Công ty ABC</p>
-                <p><strong>Nội dung chuyển khoản:</strong> ORDER-{Date.now()}</p>
-                <p><strong>Số tiền:</strong> {finalPrice.toLocaleString()} ₫</p>
-              </div>
-              <div className="qr-buttons">
-                <button
-                  onClick={handleConfirmPayment}
-                  disabled={isProcessingPayment}
-                  className={isProcessingPayment ? 'processing' : ''}
-                >
-                  {isProcessingPayment ? 'Đang xử lý...' : 'Xác nhận thanh toán'}
-                </button>
-                <button onClick={() => setShowQRDialog(false)}>Hủy</button>
-              </div>
-            </div>
-          </div>
-        )}
+              {method.tenTT}
+            </label>
+          ))}
+          {errors.paymentMethod && <small className="error">{errors.paymentMethod}</small>}
+        </div>
 
         {/* Tóm tắt đơn hàng */}
         <div className="checkout-summary">
@@ -460,7 +638,7 @@ const CheckoutPage = () => {
             <strong>{totalPrice.toLocaleString()} ₫</strong>
           </div>
           <div className="summary-item">
-            <span>Tổng tiền phí vận chuyển:</span>
+            <span>Phí vận chuyển:</span>
             <strong>{shippingFee.toLocaleString()} ₫</strong>
           </div>
           <div className="summary-item">
@@ -468,15 +646,15 @@ const CheckoutPage = () => {
             <strong>{totalDiscount.toLocaleString()} ₫</strong>
           </div>
           <div className="summary-item">
-            <span>Đã dùng tích điểm:</span>
-            <strong>{pointsDiscount.toLocaleString()} ₫</strong>
-          </div>
-          <div className="summary-item">
             <span>Tổng tiền thanh toán:</span>
             <strong>{finalPrice.toLocaleString()} ₫</strong>
           </div>
-          <button className="place-order-btn" onClick={handlePlaceOrder}>
-            Đặt hàng
+          <button
+            className="place-order-btn"
+            onClick={handlePlaceOrder}
+            disabled={isProcessingPayment}
+          >
+            {isProcessingPayment ? 'Đang xử lý...' : 'Đặt hàng'}
           </button>
         </div>
       </div>
