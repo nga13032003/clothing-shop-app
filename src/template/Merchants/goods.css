@@ -23,3 +23,122 @@
   font-size: 20px;
   cursor: pointer;
 }
+.san-pham-theo-loai {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.san-pham-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 cột đều nhau */
+  gap: 20px; /* khoảng cách giữa các thẻ */
+  justify-items: center; /* căn giữa các thẻ trong từng ô */
+}
+
+.san-pham-item {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 350px; /* tối đa mỗi thẻ rộng 350px */
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  padding: 15px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.san-pham-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+}
+
+.san-pham-item img {
+  width: 100%;   /* rộng tối đa thẻ chứa */
+  height: auto;  /* tự động theo tỉ lệ */
+  object-fit: contain; /* giữ ảnh không bị méo hoặc cắt */
+  margin-bottom: 12px;
+  display: block;  /* tránh khoảng trắng bên dưới ảnh */
+}
+
+.san-pham-item h4 {
+  font-size: 18px;
+  margin: 8px 0 12px;
+  text-align: center;
+  color: #333;
+}
+
+.san-pham-actions {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.mua-ngay-button {
+  background-color: #007bff;
+  border: none;
+  padding: 8px 15px;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.mua-ngay-button:hover {
+  background-color: #0056b3;
+}
+
+.cart-icon {
+  font-size: 22px;
+  color: #555;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.cart-icon:hover {
+  color: #007bff;
+}
+
+.load-more-button {
+  padding: 10px 20px;
+  background-color: #ffffff;
+  color: rgb(79, 79, 79);
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.load-more-button:hover {
+  background-color: #bbbbbb;
+}
+
+/* ==== Sidebar giỏ hàng ==== */
+.cart-sidebar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 320px;
+  height: 100vh;
+  background: white;
+  box-shadow: -3px 0 8px rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  z-index: 9999;
+  transform: translateX(0);
+  transition: transform 0.3s ease-in-out;
+  display: flex;
+  flex-direction: column;
+}
+
+.cart-sidebar.closed {
+  transform: translateX(100%);
+}
+
+
+

@@ -1,16 +1,15 @@
 import React, { useState } from 'react';
 import {
-  Card, Typography, Divider, Descriptions, Table,
+  Card, Divider, Descriptions, Table,
   Badge, Avatar, Button, Tabs, Tag
 } from 'antd';
 import {
   CheckCircleOutlined, CloseCircleOutlined,
-  UserOutlined, EditOutlined, ShoppingOutlined, SwapOutlined
+  UserOutlined, EditOutlined, SwapOutlined
 } from '@ant-design/icons';
 import { motion } from 'framer-motion';
 import './profile.css'; 
 
-const { Title, Text } = Typography;
 const { TabPane } = Tabs;
 
 const MyProfile = () => {

@@ -6,6 +6,7 @@ import './productDetail.css';
 import { FaShoppingCart } from 'react-icons/fa';
 import DialogAddToCart from '../Cart/dialogAddToCart';
 import { toast } from 'react-toastify';
+import DanhGia from '../../components/DanhGia';
 
 const ProductDetailPage = () => {
   const navigate = useNavigate();
@@ -222,7 +223,7 @@ const allImages = variantImages.length > 0
               onClose={() => setOpenDialogCart(false)}
             />
           )}
-
+    <DanhGia/>
     </div>
     );
 

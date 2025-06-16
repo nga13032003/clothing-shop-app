@@ -1,0 +1,144 @@
+.danhgia-container {
+  max-width: 1400px; 
+  margin: 0 auto;
+  background: #fff;
+}
+
+.danhgia-title {
+  margin-bottom: 2rem;
+  color: #f0ad4e;
+  text-align: left;
+}
+
+/* List dọc, mỗi card full width của container cha */
+.danhgia-list-vertical {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Card chiếm 100% chiều ngang */
+.danhgia-card-fullwidth {
+  width: 100%;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgb(240 173 78 / 0.3);
+}
+
+/* Giữ nguyên style cũ của các thành phần bên trong card */
+.danhgia-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  align-items: center;
+}
+
+/* Nút xem thêm / xem tất cả */
+.danhgia-header-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.danhgia-btn {
+  background-color: transparent;
+  border: 2px solid #ffffff;
+  color: #484848;
+  padding: 8px 16px;
+  font-weight: bold;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.danhgia-btn:hover {
+  background-color: #504f4e;
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 255, 254, 0.4);
+}
+
+.danhgia-btn:active {
+  transform: scale(0.98);
+}
+
+/* Dòng trên - avatar + username */
+.danhgia-user-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.4rem;
+}
+
+.danhgia-avatar {
+  background-color: #f0ad4e;
+  color: #1e1e2f;
+  font-weight: 700;
+  font-size: 1.2rem;
+  width: 40px;
+  height: 40px;
+}
+
+.danhgia-username {
+  color: #f0ad4e;
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+/* Dòng dưới - Rate */
+.danhgia-rate-wrapper {
+  color: #f0ad4e;
+}
+
+/* Phân loại */
+.danhgia-category {
+  display: block;
+  margin-bottom: 12px;
+  color: #464646;
+  font-style: italic;
+  text-align: left;
+}
+
+/* Hình ảnh */
+.danhgia-images-col {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+  justify-content: flex-start;
+}
+
+.danhgia-image {
+  max-height: 120px;
+  border-radius: 10px;
+  object-fit: contain;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.danhgia-image:hover {
+  transform: scale(1.05);
+}
+
+/* Like hữu ích */
+.danhgia-helpful {
+  margin-top: auto;
+  text-align: right;
+  color: #f0ad4e;
+  font-weight: bold;
+  user-select: none;
+  cursor: default;
+}
+
+/* Animation fadeInUp */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 20px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}

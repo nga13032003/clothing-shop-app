@@ -6,21 +6,21 @@ import { UserOutlined, EnvironmentOutlined, CreditCardOutlined, FileTextOutlined
 const mockSelectedCart = [
   {
     maBienThe: 'bt01',
-    tenSanPham: 'Áo thun nam',
-    mauSac: 'Đen',
+    tenSanPham: 'Áo sơ mi công sở vải lụa tằm dáng suông cổ tròn nhún đính ngọc tạo kiểu tay dài phối măng séc',
+    mauSac: 'Xanh',
     size: 'M',
     gia: 150000,
     soLuong: 2,
-    hinhAnhUrl: 'https://via.placeholder.com/100x100?text=Aothun',
+    hinhAnhUrl: 'https://localhost:7265/images/QA6.jpg',
   },
   {
     maBienThe: 'bt02',
-    tenSanPham: 'Quần jean nữ',
+    tenSanPham: 'Áo khoác vest công sở vải thô đũi dáng suông cổ hai ve thân áo đính khuy',
     mauSac: 'Xanh',
     size: 'L',
     gia: 350000,
     soLuong: 1,
-    hinhAnhUrl: 'https://via.placeholder.com/100x100?text=QuanJeans',
+    hinhAnhUrl: 'https://localhost:7265/images/QA7.jpg',
   },
 ];
 
@@ -375,23 +375,26 @@ const CheckoutPage = () => {
                 : 'Chọn phương thức vận chuyển'}
             </p>
             {showTransportDialog && (
-              <div className="transport-dialog">
-                {mockTransportOptions.map(option => (
-                  <div
-                    key={option.id}
-                    className="transport-option"
-                    onClick={() => {
-                      setSelectedTransport(option);
-                      setShowTransportDialog(false);
-                    }}
-                  >
-                    <p>{option.name}</p>
-                    <p>Phí: {option.fee.toLocaleString()} ₫</p>
-                    <p>Nhận hàng dự kiến: {option.estimatedDelivery}</p>
+             <div className="transport-dialog">
+              {mockTransportOptions.map(option => (
+                <div
+                  key={option.id}
+                  className="transport-option"
+                  onClick={() => {
+                    setSelectedTransport(option);
+                    setShowTransportDialog(false);
+                  }}
+                >
+                  <div>
+                    <strong>{option.name}</strong> <br />
+                    Phí: {option.fee.toLocaleString()} ₫ <br />
+                    Nhận hàng dự kiến: {option.estimatedDelivery}
                   </div>
-                ))}
-                <button onClick={() => setShowTransportDialog(false)}>Hủy</button>
-              </div>
+                </div>
+              ))}
+              <button onClick={() => setShowTransportDialog(false)}>Hủy</button>
+            </div>
+
             )}
           </div>
         </div>

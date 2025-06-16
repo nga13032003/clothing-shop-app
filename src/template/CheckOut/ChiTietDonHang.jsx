@@ -14,6 +14,7 @@ import {
 } from '@ant-design/icons';
 import './ChiTietDonHang.css';
 import confetti from 'canvas-confetti';
+import { QA1 } from '../../assets';
 
 const ChiTietDonHang = () => {
   const navigate = useNavigate();
@@ -108,10 +109,11 @@ const ChiTietDonHang = () => {
 
         <div className="order-details">
           <div className="order-products">
-            <h3><ShoppingOutlined style={{ marginRight: 6 }} />Sản phẩm</h3>
+            {/* <h3><ShoppingOutlined style={{ marginRight: 6 }} />Sản phẩm</h3> */}
             {order.cart.map((item) => (
               <div key={item.maBienThe} className="order-product-item">
-                <img src={item.hinhAnhUrl} alt={item.tenSanPham} className="product-img" />
+                <img src={QA1} alt="Logo" style={{ height: '150px', width: 'auto' }} />
+                {/* <img src={item.hinhAnhUrl} alt={item.tenSanPham} className="product-img" /> */}
                 <div className="product-info">
                   <p className="name">{item.tenSanPham}</p>
                   <p>Màu: {item.mauSac} | Size: {item.size}</p>

@@ -4,6 +4,8 @@ import {
   banner1, banner2, banner3, bannercontent1, bannerKM,
   QA1, QA2, QA3
 } from '../../assets';
+import SanPhamPage from '../Merchants/goods';
+import TrendProduct from '../Merchants/trendProduct';
 
 const { Meta } = Card;
 
@@ -49,44 +51,31 @@ const BannerSection = () => {
       </div>
 
       {/* Banner Khuyến Mãi */}
-      <div className="banner-carousel">
+      {/* <div className="banner-carousel">
         <img alt="Banner Khuyến Mãi" src={bannerKM} style={{ width: '100%', objectFit: 'cover' }} />
+         
+      </div> */}
+      <div className="box" style={{ width: '100vw', height: '70vh', overflow: 'hidden' }}>
+        <video
+          className="video-gt"
+          style={{ width: '100%', height: '100%', objectFit: 'cover', pointerEvents: 'none' }}
+          loop
+          muted
+          autoPlay
+          playsInline
+          preload="metadata"
+        >
+          <source
+            src="https://lsoul.b-cdn.net/wp-content/uploads/2025/05/SHANGHAI_RUNWAY_PC.mp4"
+            type="video/mp4"
+          />
+        </video>
       </div>
 
       {/* Card Section */}
       <div className="card-section">
         <h3>Fasic – Thời Trang Tối Giản, Vẻ Đẹp Từ Những Điều Cơ Bản</h3>
-        <Row gutter={[16, 16]} justify="center">
-          <Col xs={24} sm={12} md={8} lg={6}>
-            <Card
-              hoverable
-              style={{ width: '100%' }}
-              cover={<img alt="QA1" src={QA1} />}
-            >
-              <Meta title="Europe Street Beat" description="www.instagram.com" />
-            </Card>
-          </Col>
-
-          <Col xs={24} sm={12} md={8} lg={6}>
-            <Card
-              hoverable
-              style={{ width: '100%' }}
-              cover={<img alt="QA2" src={QA2} />}
-            >
-              <Meta title="The Great Outdoors" description="Explore beautiful landscapes and scenic views." />
-            </Card>
-          </Col>
-
-          <Col xs={24} sm={12} md={8} lg={6}>
-            <Card
-              hoverable
-              style={{ width: '100%' }}
-              cover={<img alt="QA3" src={QA3} />}
-            >
-              <Meta title="Discover The World" description="Join us to explore hidden gems around the globe." />
-            </Card>
-          </Col>
-        </Row>
+        <TrendProduct />
       </div>
     </div>
   );

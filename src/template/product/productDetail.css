@@ -1,7 +1,7 @@
 /* Tổng container */
 .product-detail {
-  max-width: 1200px;
-  margin: 40px auto;
+  max-width: 1600px;
+  margin: 20px auto;
   padding: 20px;
   font-family: 'Segoe UI', sans-serif;
 }
@@ -112,9 +112,11 @@
 }
 
 .variant-info p {
-  margin: 4px 0;
   text-align: left;
+  font-size: 16px;
+  font-weight: 500;
 }
+
 
 /* Thông báo khi chưa chọn đủ */
 .placeholder {
@@ -126,16 +128,16 @@
 /* Ảnh chính */
 .main-image-container {
   display: inline-block;
-  border: 2px solid #eee;
+  /* border: 2px solid #eee;
   border-radius: 10px;
-  box-shadow: 0 8px 16px rgba(0,0,0,0.08);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.08); */
   margin-bottom: 10px;
 }
 
 /* Ảnh nhỏ hơn 70% so với container gốc */
 .main-image {
-  display: block;
-  width: 100%;      /* Giảm kích thước xuống 70% */
+  /* display: block; */
+  width: 70%;      /* Giảm kích thước xuống 70% */
   height: auto;
   border-radius: 10px;
   object-fit: contain;

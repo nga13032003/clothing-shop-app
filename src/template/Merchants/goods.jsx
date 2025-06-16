@@ -101,7 +101,6 @@ const handleMuaNgay = (event, sp) => {
 
   return (
     <div className="san-pham-theo-loai">
-      <h2>Tất cả sản phẩm</h2>
 
       <div className="san-pham-grid">
         {currentProducts.length === 0 && (
