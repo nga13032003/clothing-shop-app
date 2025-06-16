@@ -245,10 +245,14 @@ const CheckoutPage = () => {
     if (!selectedTransport) {
       newErrors.transport = 'Vui lòng chọn đơn vị vận chuyển';
     }
-    setErrors(newErrors);
-    if (Object.keys(newErrors).length > 0) {
-      return;
-    }
+    if (!selectedCart || selectedCart.length === 0) {
+    newErrors.cart = 'Giỏ hàng của bạn đang trống';
+  }
+
+  setErrors(newErrors);
+  if (Object.keys(newErrors).length > 0) {
+    return;
+  }
 
     setIsProcessingPayment(true);
     try {
@@ -256,15 +260,15 @@ const CheckoutPage = () => {
         maKH: khachHang.maKH,
         maNV: 'NV001',
         maDiaChi: selectedAddress.maDiaChi,
-        maKM: selectedPromo ? selectedPromo.maKM : null,
-        maPTTT: selectedPaymentMethod,
+        maKM: selectedPromo.maKM,
+        maTT: selectedPaymentMethod,
         maDVVC: selectedTransport.maDVVC,
-        ghiChu: newAddress.note || selectedAddress.ghiChu || '',
+        ghiChu: (newAddress?.note || selectedAddress?.ghiChu || '').trim(),
         sanPhams: selectedCart.map(item => ({
           maBienThe: item.maBienThe,
           soLuong: item.soLuong,
-          giaBan: item.gia,
-          giamGia: selectedPromo && selectedPromo.phanTramGiam ? (item.gia * item.soLuong * selectedPromo.phanTramGiam) / 100 : 0,
+          giaBan: item.giaBan || item.gia,
+          giamGia: selectedPromo && selectedPromo.phanTramGiam ? (item.giaBan * item.soLuong * selectedPromo.phanTramGiam) / 100 : 0,
         })),
       };
 
@@ -272,6 +276,7 @@ const CheckoutPage = () => {
       localStorage.removeItem('selectedCart');
       alert(response.message || 'Đặt hàng thành công!');
       navigate('/don-hang-cua-toi');
+      console.log('Request data:', request); 
     } catch (error) {
       console.error('Lỗi khi đặt hàng:', error);
       alert(error.message || 'Đã có lỗi xảy ra khi đặt hàng');

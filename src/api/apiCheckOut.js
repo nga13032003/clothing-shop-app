@@ -29,19 +29,25 @@ export async function datHang(orderData) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      // Nếu có token thì thêm "Authorization": "Bearer " + token
+      // Nếu có token thì thêm Authorization
+      // "Authorization": "Bearer " + token
     },
     body: JSON.stringify(orderData),
   });
 
   if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(errorData || "Lỗi khi đặt hàng");
+    let errorText = "Lỗi khi đặt hàng";
+    try {
+      const errorData = await response.json();
+      errorText = errorData.message || errorText;
+    } catch {}
+    throw new Error(errorText);
   }
 
   const data = await response.json();
-  return data; // { message, MaHD }
+  return data; // { message, maHD }
 }
+
 export async function addDiaChiKhachHang(diaChiData) {
   const response = await fetch("https://localhost:7265/api/HoaDon/diachikhachhang", {
     method: "POST",
@@ -85,4 +91,20 @@ export async function deleteDiaChiKhachHang(maDiaChi) {
   }
 
   return await response.json(); // Trả về { message: "Xóa địa chỉ thành công." }
+}
+export async function getAllChiTietHoaDon() {
+  const response = await fetch("https://localhost:7265/api/HoaDon/chitiethoadon");
+  if (!response.ok) {
+    throw new Error("Lấy danh sách chi tiết hóa đơn thất bại");
+  }
+  return await response.json();
+}
+
+export async function getChiTietHoaDonTheoMaHD(maHD) {
+  const response = await fetch(`https://localhost:7265/api/HoaDon/chitiethoadon/${maHD}`);
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.message || "Không tìm thấy chi tiết hóa đơn");
+  }
+  return await response.json();
 }

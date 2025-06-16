@@ -8,6 +8,7 @@ import {
 } from '@ant-design/icons';
 import './OrderSuccessPage.css';
 import confetti from 'canvas-confetti';
+import { getChiTietHoaDonTheoMaHD } from '../../api/apiCheckOut';
 
 const OrderSuccessPage = () => {
   const navigate = useNavigate();
@@ -43,6 +44,8 @@ const OrderSuccessPage = () => {
       icon: <FileDoneOutlined />,
     },
   ]);
+
+  const [orderDetails, setOrderDetails] = useState([]);
 
   useEffect(() => {
     confetti({
@@ -85,6 +88,16 @@ const OrderSuccessPage = () => {
     return () => timers.forEach((timer) => clearTimeout(timer));
   }, []);
 
+  useEffect(() => {
+    if (order?.id) {
+      getChiTietHoaDonTheoMaHD(order.maHD)
+        .then((data) => setOrderDetails(data))
+        .catch((err) =>
+          console.error('Lỗi lấy chi tiết hóa đơn:', err.message)
+        );
+    }
+  }, [order]);
+
   if (!order) {
     return (
       <div className="order-success-container">
@@ -118,7 +131,7 @@ const OrderSuccessPage = () => {
             Cảm ơn bạn đã mua sắm tại cửa hàng của chúng tôi.
           </p>
           <p className="order-id">
-            Mã đơn hàng: <strong>{order.id}</strong>
+            Mã đơn hàng: <strong>{order.maHD}</strong>
           </p>
         </div>
 
@@ -126,6 +139,38 @@ const OrderSuccessPage = () => {
         <div style={{ textAlign: 'center', margin: '1rem 0' }}>
           <TruckOutlined className="truck-animate" />
         </div>
+
+        {/* Chi tiết đơn hàng */}
+        {orderDetails.length > 0 && (
+          <div className="order-detail-section">
+            <h3>Chi tiết đơn hàng</h3>
+            <table className="order-detail-table">
+              <thead>
+                <tr>
+                  <th>Sản phẩm</th>
+                  <th>Số lượng</th>
+                  <th>Giá bán</th>
+                  <th>Giảm giá</th>
+                  <th>Thành tiền</th>
+                </tr>
+              </thead>
+              <tbody>
+                {orderDetails.map((item) => (
+                  <tr key={item.maChiTietHD}>
+                    <td>
+                      {item.chiTietSanPham?.tenSanPham ||
+                        item.maBienThe}
+                    </td>
+                    <td>{item.soLuong}</td>
+                    <td>{item.giaBan.toLocaleString('vi-VN')}₫</td>
+                    <td>{item.giaGiam.toLocaleString('vi-VN')}₫</td>
+                    <td>{item.thanhTien.toLocaleString('vi-VN')}₫</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
 
         {/* Hành động */}
         <div className="order-actions">
