@@ -117,7 +117,7 @@ useEffect(() => {
 
       const newCart = {
         maGioHang: randomMaGioHang,
-        maKhachHang: khachHang.maKH,
+        maKH: khachHang.maKH,
         ngayTao: now,
         ngayCapNhat: now,
         trangThai: 1,
@@ -144,8 +144,8 @@ const cartItems = Array.isArray(res) ? res : res.data || [];
       // Nếu chưa có thì thêm mới sản phẩm vào giỏ hàng
       await addToCart({
         maKhachHang: khachHang.maKH,
-  maBienThe: selectedVariant.maBienThe,
-  soLuong,
+        maBienThe: selectedVariant.maBienThe,
+        soLuong,
       });
     }
 

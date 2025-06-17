@@ -4,6 +4,7 @@ import './checkout.css';
 import { FaTrash } from 'react-icons/fa';
 import { UserOutlined, EnvironmentOutlined, CreditCardOutlined, EditOutlined } from '@ant-design/icons';
 import { datHang, getDiaChiKhachHang, getKhuyenMai, getPhuongThucThanhToan, getDonViVanChuyen, addDiaChiKhachHang, updateDiaChiKhachHang, deleteDiaChiKhachHang } from '../../api/apiCheckOut';
+import { toast } from 'react-toastify';
 
 const CheckoutPage = () => {
   const navigate = useNavigate();
@@ -148,10 +149,10 @@ const CheckoutPage = () => {
           const defaultAddress = updatedAddresses.find(addr => addr.macDinh) || updatedAddresses[0] || null;
           setSelectedAddress(defaultAddress);
         }
-        alert('Xóa địa chỉ thành công!');
+        toast.success('Xóa địa chỉ thành công!');
       } catch (error) {
         console.error('Lỗi khi xóa địa chỉ:', error);
-        alert(error.message || 'Đã có lỗi xảy ra khi xóa địa chỉ');
+        toast.error(error.message || 'Đã có lỗi xảy ra khi xóa địa chỉ');
       }
     }
   };
@@ -180,7 +181,7 @@ const CheckoutPage = () => {
         );
         setAddresses(updatedAddresses);
         setSelectedAddress(updatedAddress);
-        alert('Cập nhật địa chỉ thành công!');
+        toast.success('Cập nhật địa chỉ thành công!');
       } else {
         // Thêm địa chỉ mới
         const newAddr = {
@@ -197,7 +198,7 @@ const CheckoutPage = () => {
         const response = await addDiaChiKhachHang(newAddr);
         setAddresses([...addresses, response]);
         setSelectedAddress(response);
-        alert('Thêm địa chỉ thành công!');
+        toast.success('Thêm địa chỉ thành công!');
       }
       setIsEditingAddress(false);
       setEditingAddressId(null);
@@ -212,7 +213,7 @@ const CheckoutPage = () => {
       });
     } catch (error) {
       console.error('Lỗi khi lưu địa chỉ:', error);
-      alert(error.message || 'Đã có lỗi xảy ra khi lưu địa chỉ');
+      toast.error(error.message || 'Đã có lỗi xảy ra khi lưu địa chỉ');
     }
   };
 
@@ -260,7 +261,7 @@ const CheckoutPage = () => {
         maKH: khachHang.maKH,
         maNV: 'NV001',
         maDiaChi: selectedAddress.maDiaChi,
-        maKM: selectedPromo.maKM,
+        maKM: selectedPromo ? selectedPromo.maKM : null,
         maTT: selectedPaymentMethod,
         maDVVC: selectedTransport.maDVVC,
         ghiChu: (newAddress?.note || selectedAddress?.ghiChu || '').trim(),
@@ -274,12 +275,12 @@ const CheckoutPage = () => {
 
       const response = await datHang(request);
       localStorage.removeItem('selectedCart');
-      alert(response.message || 'Đặt hàng thành công!');
+      toast.success(response.message || 'Đặt hàng thành công!');
       navigate('/don-hang-cua-toi');
       console.log('Request data:', request); 
     } catch (error) {
       console.error('Lỗi khi đặt hàng:', error);
-      alert(error.message || 'Đã có lỗi xảy ra khi đặt hàng');
+      toast.error(error.message || 'Đã có lỗi xảy ra khi đặt hàng');
     } finally {
       setIsProcessingPayment(false);
     }
