@@ -6,14 +6,16 @@ import ChatBox from '../../components/chatbox';
 import CustomFooter from './Footer';
 import { getGioHangByKhachHang } from '../../api/apiCart';
 import { getCartItems } from '../../api/apiCartDetail';
+import { CartProvider, useCart } from '../Cart/CartContext';
 
 const { Content } = Layout;
 
-const App = ({ children }) => {
+const AppContent = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [cartCount, setCartCount] = useState(0);
   const [cartItems, setCartItems] = useState([]);
   const [cartUpdateTrigger, setCartUpdateTrigger] = useState(0);
+
+  const { setCartCount } = useCart(); 
 
   const fetchCartData = async () => {
     const khachHangStr = localStorage.getItem('khachHang');
@@ -31,8 +33,8 @@ const App = ({ children }) => {
         const maGioHang = gioHang[0].maGioHang;
         const items = await getCartItems(maGioHang);
         setCartItems(items);
-        const totalQuantity = items.reduce((sum, item) => sum + item.soLuong, 0);
-        setCartCount(totalQuantity);
+        const uniqueVariantCount = items.length;
+        setCartCount(uniqueVariantCount); 
       } else {
         setCartCount(0);
         setCartItems([]);
@@ -54,15 +56,20 @@ const App = ({ children }) => {
     }
   }, []);
 
+  useEffect(() => {
+    if (isLoggedIn) {
+      fetchCartData();
+    }
+  }, [cartUpdateTrigger]);
+
   return (
     <Layout className="layout">
-      <HeaderComponent />
+      <HeaderComponent /> 
       <Content className="content">
         <div>
           {React.Children.map(children, (child) =>
             React.cloneElement(child, {
               fetchCartData,
-              cartCount,
               cartItems,
               setCartUpdateTrigger,
             })
@@ -74,5 +81,11 @@ const App = ({ children }) => {
     </Layout>
   );
 };
+
+const App = ({ children }) => (
+  <CartProvider>
+    <AppContent children={children} />
+  </CartProvider>
+);
 
 export default App;
