@@ -24,6 +24,8 @@ const SanPhamPage = () => {
   const navigate = useNavigate();
  const [cartItems, setCartItems] = useState([]);
  const [cartUpdateTrigger, setCartUpdateTrigger] = useState(0);
+ const [dialogMode, setDialogMode] = useState('add'); // 'add' hoặc 'buy'
+
 
  useEffect(() => {
   fetchCartData();
@@ -119,16 +121,24 @@ const handleMuaNgay = (event, sp) => {
           <div className="san-pham-actions" onClick={(e) => e.stopPropagation()}>
            <button
               className="mua-ngay-button"
-              onClick={(e) => handleMuaNgay(e, sp)}
+              onClick={(e) => {
+                handleMuaNgay(e, sp);
+                setDialogMode('buy');
+              }}
             >
               Mua ngay
             </button>
 
 
                         <FaShoppingCart
-              className="cart-icon"
-              onClick={() => handleOpenDialog(sp)}
-            />
+                        className="cart-icon"
+                        onClick={() => {
+                          setSelectedSanPham(sp);
+                          setOpenDialog(true);
+                          setDialogMode('add');
+                        }}
+                      />
+                  
 
           </div>
         </div>
@@ -150,6 +160,7 @@ const handleMuaNgay = (event, sp) => {
         {openDialog && selectedSanPham && (
         <DialogAddToCart
           sanPham={selectedSanPham}
+          mode={dialogMode}
           onClose={() => setOpenDialog(false)}
           fetchCartData={fetchCartData} // truyền hàm fetch lại giỏ hàng
           setCartUpdateTrigger={setCartUpdateTrigger}

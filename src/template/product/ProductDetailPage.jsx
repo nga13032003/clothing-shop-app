@@ -18,6 +18,8 @@ const ProductDetailPage = () => {
   const [selectedVariant, setSelectedVariant] = useState(null);
   const [selectedImageUrl, setSelectedImageUrl] = useState('');
   const [openDialogCart, setOpenDialogCart] = useState(false);
+  const [dialogMode, setDialogMode] = useState('add'); // 'add' hoặc 'buy'
+  const [openDialog, setOpenDialog] = useState(false);
 
 
   // Lấy dữ liệu sản phẩm và biến thể
@@ -105,14 +107,14 @@ const allImages = variantImages.length > 0
   ? [...new Set(variantImages)] // loại trùng
   : sanPham?.hinhAnh ? [sanPham.hinhAnh] : [];
 
-  const handleMuaNgay = () => {
+  const handleMuaNgay = (event, sp) => {
+  event.stopPropagation(); // ngăn sự kiện click nổi lên phần tử cha
   const isLoggedIn = !!localStorage.getItem('khachHang');
   if (!isLoggedIn) {
     navigate('/login');
-  } else if (!selectedVariant) {
-    toast.warning("Vui lòng chọn màu sắc và size trước khi thêm vào giỏ hàng.");
   } else {
-    setOpenDialogCart(true);
+    setSanPham(sp); // gán sản phẩm được chọn
+    setOpenDialog(true);    // mở dialog
   }
 };
 
@@ -210,8 +212,23 @@ const allImages = variantImages.length > 0
             </div>
             <br/>
             <div className="san-pham-actions">
-                <button className="mua-ngay-button" onClick={handleMuaNgay}>Mua ngay</button>
-                <FaShoppingCart className="cart-icon" onClick={handleMuaNgay} />
+                <button
+              className="mua-ngay-button"
+              onClick={(e) => {
+                handleMuaNgay(e, sanPham);
+                setDialogMode('buy');
+              }}
+            >
+              Mua ngay
+            </button>
+                 <FaShoppingCart
+                                        className="cart-icon"
+                                        onClick={() => {
+                                          setSanPham(sanPham);
+                                          setOpenDialog(true);
+                                          setDialogMode('add');
+                                        }}
+                                      />
 
             </div>
         </div>
@@ -219,6 +236,7 @@ const allImages = variantImages.length > 0
                 {openDialogCart && selectedVariant && (
             <DialogAddToCart
               sanPham={sanPham}
+              mode={dialogMode}
               bienThe={selectedVariant}
               onClose={() => setOpenDialogCart(false)}
             />
