@@ -6,7 +6,6 @@ import {
   TruckOutlined,
 } from '@ant-design/icons';
 import './OrderSuccessPage.css';
-import './ChiTietDonHang.css'
 import confetti from 'canvas-confetti';
 import { getChiTietHoaDonTheoMaHD, getHoaDonTheoMaHD } from '../../api/apiCheckOut';
 
@@ -78,7 +77,7 @@ const OrderSuccessPage = () => {
             Mã đơn hàng: <strong>{order.maHoaDon}</strong>
           </p>
         </div>
-
+        
         <div style={{ textAlign: 'center', margin: '1rem 0' }}>
           <TruckOutlined className="truck-animate" />
         </div>

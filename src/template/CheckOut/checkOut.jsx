@@ -318,7 +318,7 @@ const CheckoutPage = () => {
       toast.success(response.message || 'Đặt hàng thành công!');
       localStorage.removeItem('selectedCart');
       localStorage.removeItem('selectedVariantForCheckout');
-      navigate('/don-hang-cua-toi');
+      navigate(`/don-hang-cua-toi/${response.maHoaDon}`);
       console.log('Request data:', request); 
     } catch (error) {
       console.error('Lỗi khi đặt hàng:', error);
