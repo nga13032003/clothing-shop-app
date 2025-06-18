@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { useCart } from './CartContext';
 
 
-const DialogAddToCart = ({ sanPham, onClose, fetchCartData: fetchCartDataProp, setCartUpdateTrigger}) => {
+const DialogAddToCart = ({ sanPham, mode, onClose, fetchCartData: fetchCartDataProp, setCartUpdateTrigger}) => {
   const [bienThes, setBienThes] = useState([]);
   const [selectedColor, setSelectedColor] = useState('');
   const [selectedSize, setSelectedSize] = useState('');
@@ -97,36 +97,56 @@ useEffect(() => {
       toast.warning('Vui lòng chọn đầy đủ màu sắc và kích thước!');
       return;
     }
+
     if (soLuong > selectedVariant.tonKho) {
-  toast.warning(`Số lượng vượt quá tồn kho (${selectedVariant.tonKho})`);
-  return;
-}
-
-
-    await addToCart({
-      maKH: khachHang.maKH,
-      maBienThe: selectedVariant.maBienThe,
-      soLuong,
-    });
-
-    if (fetchCartDataContext) {
-      await fetchCartDataContext();
-    } else if (fetchCartDataProp) {
-      await fetchCartDataProp();
+      toast.warning(`Số lượng vượt quá tồn kho (${selectedVariant.tonKho})`);
+      return;
     }
 
-    if (setCartUpdateTrigger) {
-      setCartUpdateTrigger(prev => prev + 1);
+    // Nếu là "add" thì thêm vào giỏ hàng như thường
+    if (mode === 'add') {
+      await addToCart({
+        maKH: khachHang.maKH,
+        maBienThe: selectedVariant.maBienThe,
+        soLuong,
+      });
+
+      if (fetchCartDataContext) {
+        await fetchCartDataContext();
+      } else if (fetchCartDataProp) {
+        await fetchCartDataProp();
+      }
+
+      if (setCartUpdateTrigger) {
+        setCartUpdateTrigger(prev => prev + 1);
+      }
+
+      toast.success('Thêm vào giỏ hàng thành công!');
+      onClose(); // chỉ đóng dialog
     }
 
-    toast.success('Thêm vào giỏ hàng thành công!');
-    onClose();
+    // Nếu là "buy" thì lưu vào localStorage và chuyển trang
+   else if (mode === 'buy') {
+        // Xử lý đường dẫn hình ảnh biến thể
+        let imageUrl = selectedVariant.hinhAnh;
+        if (imageUrl && !imageUrl.startsWith('https')) {
+          imageUrl = `https://localhost:7265/Images/${imageUrl}`;
+        }
+
+        localStorage.setItem("selectedVariantForCheckout", JSON.stringify({
+          ...selectedVariant,
+          hinhAnhUrl: imageUrl,
+          soLuong,
+        }));
+        onClose();
+        navigate('/thanh-toan');
+      }
+
   } catch (error) {
     console.error('Lỗi khi thêm vào giỏ:', error);
     toast.error(error.message || 'Không thể thêm vào giỏ hàng!');
   }
 };
-
 
 
 
@@ -205,12 +225,25 @@ useEffect(() => {
             </div>
             </div>
 
-            <button
-                  className=" add-to-cart-btn w-full bg-gradient-to-r from-pink-500 to-red-500 text-white font-bold py-2 rounded-md hover:from-pink-600 hover:to-red-600 transition-all"
-                  onClick={handleAddToCart}
-                >
-                  Thêm vào giỏ
-                </button>
+            <div style={{ display: 'flex', gap: '12px', marginTop: '1.5rem' }}>
+              <button
+                className="add-to-cart-btn"
+                onClick={handleAddToCart}
+                style={{ flex: 1 }}
+              >
+                {mode === 'buy' ? 'Mua ngay' : 'Thêm vào giỏ hàng'}
+              </button>
+
+              <button
+                className="close-dialog-btn"
+                onClick={onClose}
+                style={{ flex: 1 }}
+              >
+                Đóng
+              </button>
+            </div>
+
+
                 {/* <button
                   className="view-detail-btn w-full bg-gray-100 text-gray-800 py-2 rounded-md mt-2 hover:bg-gray-200 transition-all"
                   onClick={() => navigate(`/product/${sanPham.maSanPham}`)}

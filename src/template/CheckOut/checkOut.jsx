@@ -4,6 +4,7 @@ import './checkout.css';
 import { FaTrash } from 'react-icons/fa';
 import { UserOutlined, EnvironmentOutlined, CreditCardOutlined, EditOutlined } from '@ant-design/icons';
 import { datHang, getDiaChiKhachHang, getKhuyenMai, getPhuongThucThanhToan, getDonViVanChuyen, addDiaChiKhachHang, updateDiaChiKhachHang, deleteDiaChiKhachHang } from '../../api/apiCheckOut';
+import { useCart } from '../Cart/CartContext';
 import { toast } from 'react-toastify';
 
 const CheckoutPage = () => {
@@ -33,7 +34,8 @@ const CheckoutPage = () => {
   const [errors, setErrors] = useState({});
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const [expandedAddressId, setExpandedAddressId] = useState(null);
-  
+  const { fetchCartData } = useCart(); // lấy từ context
+
 
 
   // Lấy thông tin khách hàng từ localStorage
@@ -96,10 +98,47 @@ const CheckoutPage = () => {
       fetchPromoCodes();
     }
   }, []);
+  useEffect(() => {
+  const buyNowItemRaw = localStorage.getItem('selectedVariantForCheckout');
+  if (buyNowItemRaw) {
+    try {
+      const parsed = JSON.parse(buyNowItemRaw);
+
+      // Ép kiểu đảm bảo không bị string
+      const buyNowItem = {
+        ...parsed,
+        giaBan: Number(parsed.giaBan),
+        soLuong: Number(parsed.soLuong),
+      };
+
+      setSelectedCart([buyNowItem]);
+      console.log("Dữ liệu mua ngay:", buyNowItem); 
+    } catch (error) {
+      console.error('Lỗi khi parse selectedVariantForCheckout:', error);
+    }
+  } else {
+    const cart = JSON.parse(localStorage.getItem('selectedCart')) || [];
+    setSelectedCart(cart);
+  }
+
+  // Lấy địa chỉ giao hàng
+  const fetchAddresses = async () => {
+    try {
+      const response = await getDiaChiKhachHang(khachHang.maKH);
+      setAddresses(response);
+      const defaultAddress = response.find(addr => addr.macDinh) || response[0];
+      setSelectedAddress(defaultAddress);
+    } catch (error) {
+      console.error('Lỗi khi lấy địa chỉ:', error);
+    }
+  };
+  fetchAddresses();
+}, []);
+
 
   // Tính tổng tiền hàng
   const getTotalPrice = () => {
-    return selectedCart.reduce((sum, item) => sum + item.soLuong * item.gia, 0);
+    return selectedCart.reduce((sum, item) => sum + item.soLuong * item.giaBan, 0);
   };
 
   // Xử lý thay đổi địa chỉ
@@ -149,10 +188,10 @@ const CheckoutPage = () => {
           const defaultAddress = updatedAddresses.find(addr => addr.macDinh) || updatedAddresses[0] || null;
           setSelectedAddress(defaultAddress);
         }
-        toast.success('Xóa địa chỉ thành công!');
+        alert('Xóa địa chỉ thành công!');
       } catch (error) {
         console.error('Lỗi khi xóa địa chỉ:', error);
-        toast.error(error.message || 'Đã có lỗi xảy ra khi xóa địa chỉ');
+        alert(error.message || 'Đã có lỗi xảy ra khi xóa địa chỉ');
       }
     }
   };
@@ -181,7 +220,7 @@ const CheckoutPage = () => {
         );
         setAddresses(updatedAddresses);
         setSelectedAddress(updatedAddress);
-        toast.success('Cập nhật địa chỉ thành công!');
+        alert('Cập nhật địa chỉ thành công!');
       } else {
         // Thêm địa chỉ mới
         const newAddr = {
@@ -198,7 +237,7 @@ const CheckoutPage = () => {
         const response = await addDiaChiKhachHang(newAddr);
         setAddresses([...addresses, response]);
         setSelectedAddress(response);
-        toast.success('Thêm địa chỉ thành công!');
+        alert('Thêm địa chỉ thành công!');
       }
       setIsEditingAddress(false);
       setEditingAddressId(null);
@@ -213,7 +252,7 @@ const CheckoutPage = () => {
       });
     } catch (error) {
       console.error('Lỗi khi lưu địa chỉ:', error);
-      toast.error(error.message || 'Đã có lỗi xảy ra khi lưu địa chỉ');
+      alert(error.message || 'Đã có lỗi xảy ra khi lưu địa chỉ');
     }
   };
 
@@ -261,27 +300,29 @@ const CheckoutPage = () => {
         maKH: khachHang.maKH,
         maNV: 'NV001',
         maDiaChi: selectedAddress.maDiaChi,
-        maKM: selectedPromo ? selectedPromo.maKM : null,
+        maKM: selectedPromo && selectedPromo.maKM ? selectedPromo.maKM : null,
         maTT: selectedPaymentMethod,
         maDVVC: selectedTransport.maDVVC,
         ghiChu: (newAddress?.note || selectedAddress?.ghiChu || '').trim(),
         sanPhams: selectedCart.map(item => ({
           maBienThe: item.maBienThe,
           soLuong: item.soLuong,
-          giaBan: item.giaBan || item.gia,
+          giaBan: item.giaBan,
           giamGia: selectedPromo && selectedPromo.phanTramGiam ? (item.giaBan * item.soLuong * selectedPromo.phanTramGiam) / 100 : 0,
         })),
       };
 
       const response = await datHang(request);
       localStorage.removeItem('selectedCart');
+      await fetchCartData(); 
       toast.success(response.message || 'Đặt hàng thành công!');
-      const maHD = response.maHoaDon;
-      navigate(`/don-hang-cua-toi/${maHD}`); 
-      console.log('Request data:', request);
+      localStorage.removeItem('selectedCart');
+      localStorage.removeItem('selectedVariantForCheckout');
+      navigate('/don-hang-cua-toi');
+      console.log('Request data:', request); 
     } catch (error) {
       console.error('Lỗi khi đặt hàng:', error);
-      toast.error(error.message || 'Đã có lỗi xảy ra khi đặt hàng');
+      alert(error.message || 'Đã có lỗi xảy ra khi đặt hàng');
     } finally {
       setIsProcessingPayment(false);
     }
@@ -562,7 +603,7 @@ const CheckoutPage = () => {
                 <p className="name">{item.tenSanPham}</p>
                 <p>Màu: {item.mauSac} | Size: {item.size}</p>
                 <p>Số lượng: {item.soLuong}</p>
-                <p>Giá: {(item.gia * item.soLuong).toLocaleString()} ₫</p>
+                <p>Giá: {(item.giaBan * item.soLuong).toLocaleString()} ₫</p>
               </div>
             </div>
           ))}

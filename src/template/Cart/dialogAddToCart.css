@@ -92,7 +92,7 @@
 
 /* Action buttons */
 .add-to-cart-btn,
-.view-detail-btn {
+.view-detail-btn, .close-dialog-btn {
   padding: 0.75rem;
   margin-top: 1.5rem;
   border: none;
@@ -309,3 +309,18 @@
   align-items: center;
   gap: 8px;
     }
+.close-dialog-btn {
+  padding: 0.75rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  background-color: #e0e0e0;
+  color: #333;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.close-dialog-btn:hover {
+  background-color: #d6d6d6;
+}
