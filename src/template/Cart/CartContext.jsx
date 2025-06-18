@@ -1,6 +1,7 @@
-// src/contexts/CartContext.js
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { getGioHangByKhachHang, getCartItems } from '../api/apiCart';
+import { getGioHangByKhachHang } from '../../api/apiCart';
+import { getCartItems } from '../../api/apiCartDetail';
 
 const CartContext = createContext();
 
@@ -13,7 +14,7 @@ export const CartProvider = ({ children }) => {
   const fetchCartData = async () => {
     const khachHangStr = localStorage.getItem('khachHang');
     if (!khachHangStr) {
-      setCartCount(0);
+      setCartCount(0);         
       setCartItems([]);
       return;
     }
@@ -27,26 +28,36 @@ export const CartProvider = ({ children }) => {
         const maGioHang = gioHang[0].maGioHang;
         const items = await getCartItems(maGioHang);
         setCartItems(items);
-        setCartCount(items.length);
+        setCartCount(items.length); 
       } else {
         setCartItems([]);
         setCartCount(0);
       }
     } catch (err) {
       console.error('Lỗi lấy giỏ hàng:', err);
+      setCartItems([]);
+      setCartCount(0); 
     }
   };
 
-  // Fetch lần đầu khi user đã login
+  
   useEffect(() => {
-    const khachHang = localStorage.getItem('khachHang');
-    if (khachHang) {
+    const khachHangStr = localStorage.getItem('khachHang');
+    if (khachHangStr) {
       fetchCartData();
     }
   }, []);
 
   return (
-    <CartContext.Provider value={{ cartCount, cartItems, fetchCartData }}>
+    <CartContext.Provider
+      value={{
+        cartCount,
+        setCartCount,
+        cartItems,
+        setCartItems,
+        fetchCartData,
+      }}
+    >
       {children}
     </CartContext.Provider>
   );

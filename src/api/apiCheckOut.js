@@ -1,3 +1,4 @@
+import axios from 'axios';
 export async function getDiaChiKhachHang(maKH) {
   const response = await fetch(`https://localhost:7265/api/HoaDon/diachikhachhang/${maKH}`);
   if (!response.ok) throw new Error("Lấy địa chỉ khách hàng thất bại");
@@ -108,3 +109,21 @@ export async function getChiTietHoaDonTheoMaHD(maHD) {
   }
   return await response.json();
 }
+
+export async function getHoaDonTheoMaHD(maHD) {
+  const response = await fetch(`https://localhost:7265/api/HoaDon/${maHD}`);
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.message || "Không tìm thấy hóa đơn");
+  }
+  return await response.json();
+}
+export const getDonHangCuaToi = async (maKH) => {
+  try {
+    const response = await axios.get(`https://localhost:7265/api/HoaDon?maKH=${maKH}`);
+    return response.data;
+  } catch (error) {
+    console.error('Lỗi khi lấy dữ liệu đơn hàng:', error);
+    return [];
+  }
+};

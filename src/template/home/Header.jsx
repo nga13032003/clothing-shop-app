@@ -14,40 +14,43 @@ import {
   ProfileOutlined,
   LogoutOutlined
 } from '@ant-design/icons';
+import { useCart } from '../Cart/CartContext';
 
 const HeaderComponent = () => {
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
-  const [cartCount, setCartCount] = useState(0);
+  //const [cartCount, setCartCount] = useState(0);
   const [userName, setUserName] = useState('');
+  const { cartCount, setCartCount, fetchCartData } = useCart();
+
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
-  const fetchCartData = async () => {
-    const khachHangStr = localStorage.getItem('khachHang');
-    if (!khachHangStr) {
-      setCartCount(0);
-      return;
-    }
-    const khachHang = JSON.parse(khachHangStr);
-    const maKhachHang = khachHang.maKH;
+  // const fetchCartData = async () => {
+  //   const khachHangStr = localStorage.getItem('khachHang');
+  //   if (!khachHangStr) {
+  //     setCartCount(0);
+  //     return;
+  //   }
+  //   const khachHang = JSON.parse(khachHangStr);
+  //   const maKhachHang = khachHang.maKH;
 
-    try {
-      const gioHang = await getGioHangByKhachHang(maKhachHang);
-      if (gioHang && gioHang.length > 0) {
-        const maGioHang = gioHang[0].maGioHang;
-        const items = await getCartItems(maGioHang);
-        const totalQuantity = items.reduce((sum, item) => sum + item.soLuong, 0);
-        setCartCount(totalQuantity);
-      } else {
-        setCartCount(0);
-      }
-    } catch (error) {
-      console.error('Lỗi khi lấy giỏ hàng:', error);
-    }
-  };
+  //   try {
+  //     const gioHang = await getGioHangByKhachHang(maKhachHang);
+  //     if (gioHang && gioHang.length > 0) {
+  //       const maGioHang = gioHang[0].maGioHang;
+  //       const items = await getCartItems(maGioHang);
+  //       const totalQuantity = items.reduce((sum, item) => sum + item.soLuong, 0);
+  //       setCartCount(totalQuantity);
+  //     } else {
+  //       setCartCount(0);
+  //     }
+  //   } catch (error) {
+  //     console.error('Lỗi khi lấy giỏ hàng:', error);
+  //   }
+  // };
 
   useEffect(() => {
     const khachHangStr = localStorage.getItem('khachHang');

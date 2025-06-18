@@ -13,6 +13,7 @@ import instagram from './icons/instagram.png'
 import login from './images/login.jpg'
 import cart from './icons/cart.png'
 import emptyCart from './images/emptyCart.svg'
+import codebar from './icons/codebar.png'
 
 export{
     Logo,
@@ -29,5 +30,6 @@ export{
     instagram,
     login,
     cart,
-    emptyCart
+    emptyCart,
+    codebar
 }

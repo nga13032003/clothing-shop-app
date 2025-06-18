@@ -1,51 +1,22 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import {
   CheckCircleOutlined,
-  ClockCircleOutlined,
+
   TruckOutlined,
-  FileDoneOutlined,
 } from '@ant-design/icons';
 import './OrderSuccessPage.css';
+import './ChiTietDonHang.css'
 import confetti from 'canvas-confetti';
-import { getChiTietHoaDonTheoMaHD } from '../../api/apiCheckOut';
+import { getChiTietHoaDonTheoMaHD, getHoaDonTheoMaHD } from '../../api/apiCheckOut';
 
 const OrderSuccessPage = () => {
   const navigate = useNavigate();
-  const location = useLocation();
-  const order =
-    location.state?.order ||
-    JSON.parse(localStorage.getItem('orders'))?.slice(-1)[0] ||
-    null;
+  const { maHD } = useParams();
 
-  const [orderStatus, setOrderStatus] = useState([
-    {
-      status: 'Đặt hàng thành công',
-      timestamp: order?.timestamp || new Date().toISOString(),
-      active: true,
-      icon: <CheckCircleOutlined />,
-    },
-    {
-      status: 'Đang xử lý',
-      timestamp: null,
-      active: false,
-      icon: <ClockCircleOutlined />,
-    },
-    {
-      status: 'Đang giao hàng',
-      timestamp: null,
-      active: false,
-      icon: <TruckOutlined className="truck-animate" />,
-    },
-    {
-      status: 'Đã giao hàng',
-      timestamp: null,
-      active: false,
-      icon: <FileDoneOutlined />,
-    },
-  ]);
-
+  const [order, setOrder] = useState(null);
   const [orderDetails, setOrderDetails] = useState([]);
+ 
 
   useEffect(() => {
     confetti({
@@ -55,48 +26,30 @@ const OrderSuccessPage = () => {
       colors: ['#3b82f6', '#22c55e', '#f97316'],
     });
 
-    const timers = [
-      setTimeout(() => {
-        setOrderStatus((prev) =>
-          prev.map((item, index) =>
-            index === 1
-              ? { ...item, active: true, timestamp: new Date().toISOString() }
-              : item
-          )
-        );
-      }, 2000),
-      setTimeout(() => {
-        setOrderStatus((prev) =>
-          prev.map((item, index) =>
-            index === 2
-              ? { ...item, active: true, timestamp: new Date().toISOString() }
-              : item
-          )
-        );
-      }, 4000),
-      setTimeout(() => {
-        setOrderStatus((prev) =>
-          prev.map((item, index) =>
-            index === 3
-              ? { ...item, active: true, timestamp: new Date().toISOString() }
-              : item
-          )
-        );
-      }, 6000),
-    ];
-
-    return () => timers.forEach((timer) => clearTimeout(timer));
   }, []);
 
   useEffect(() => {
-    if (order?.id) {
-      getChiTietHoaDonTheoMaHD(order.maHD)
-        .then((data) => setOrderDetails(data))
-        .catch((err) =>
-          console.error('Lỗi lấy chi tiết hóa đơn:', err.message)
-        );
+    if (maHD) {
+      getHoaDonTheoMaHD(maHD)
+        .then(setOrder)
+        .catch((err) => {
+          console.error('Lỗi lấy hóa đơn:', err.message);
+        });
+
+      getChiTietHoaDonTheoMaHD(maHD)
+        .then(setOrderDetails)
+        .catch((err) => {
+          console.error('Lỗi lấy chi tiết hóa đơn:', err.message);
+        });
     }
-  }, [order]);
+  }, [maHD]);
+
+  const formatDate = (isoString) => {
+    return new Date(isoString).toLocaleString('vi-VN', {
+      dateStyle: 'medium',
+      timeStyle: 'short',
+    });
+  };
 
   if (!order) {
     return (
@@ -114,65 +67,28 @@ const OrderSuccessPage = () => {
     );
   }
 
-  const formatDate = (isoString) => {
-    return new Date(isoString).toLocaleString('vi-VN', {
-      dateStyle: 'medium',
-      timeStyle: 'short',
-    });
-  };
-
   return (
     <div className="order-success-container">
       <div className="order-success-card">
         <div className="order-header">
           <CheckCircleOutlined className="order-success-icon" />
           <h1 className="order-title">Đặt hàng thành công!</h1>
-          <p className="order-subtitle">
-            Cảm ơn bạn đã mua sắm tại cửa hàng của chúng tôi.
-          </p>
-          <p className="order-id">
-            Mã đơn hàng: <strong>{order.maHD}</strong>
+          <p className="order-subtitle">Cảm ơn bạn đã mua sắm tại cửa hàng của chúng tôi.</p>
+          <p className="order-details">
+            Mã đơn hàng: <strong>{order.maHoaDon}</strong>
           </p>
         </div>
 
-        {/* Xe tải animation */}
         <div style={{ textAlign: 'center', margin: '1rem 0' }}>
           <TruckOutlined className="truck-animate" />
         </div>
 
-        {/* Chi tiết đơn hàng */}
-        {orderDetails.length > 0 && (
-          <div className="order-detail-section">
-            <h3>Chi tiết đơn hàng</h3>
-            <table className="order-detail-table">
-              <thead>
-                <tr>
-                  <th>Sản phẩm</th>
-                  <th>Số lượng</th>
-                  <th>Giá bán</th>
-                  <th>Giảm giá</th>
-                  <th>Thành tiền</th>
-                </tr>
-              </thead>
-              <tbody>
-                {orderDetails.map((item) => (
-                  <tr key={item.maChiTietHD}>
-                    <td>
-                      {item.chiTietSanPham?.tenSanPham ||
-                        item.maBienThe}
-                    </td>
-                    <td>{item.soLuong}</td>
-                    <td>{item.giaBan.toLocaleString('vi-VN')}₫</td>
-                    <td>{item.giaGiam.toLocaleString('vi-VN')}₫</td>
-                    <td>{item.thanhTien.toLocaleString('vi-VN')}₫</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+        <div className="order-status-tracker">
 
-        {/* Hành động */}
+        </div>
+
+
+
         <div className="order-actions">
           <button
             className="order-button-primary"
@@ -182,9 +98,9 @@ const OrderSuccessPage = () => {
           </button>
           <button
             className="order-button-secondary"
-            onClick={() => navigate('/don-hang')}
+            onClick={() => navigate(`/chi-tiet-don-hang/${order.maHoaDon}`)}
           >
-            Xem đơn hàng
+            Xem đơn hàng chi tiết
           </button>
         </div>
       </div>

@@ -1,5 +1,4 @@
-/* ChiTietDonHang.css */
-
+/* ---------- Container tổng ---------- */
 .order-success-container {
   display: flex;
   justify-content: center;
@@ -19,6 +18,7 @@
   animation: fadeInUp 0.6s ease;
 }
 
+/* ---------- Header ---------- */
 .order-header {
   margin-bottom: 1.5rem;
 }
@@ -30,6 +30,7 @@
   text-align: left;
 }
 
+/* ---------- Timeline trạng thái ---------- */
 .order-status-section {
   margin-bottom: 2rem;
 }
@@ -47,6 +48,7 @@
   margin-top: 1rem;
   border-top: 2px dashed #86a9c6;
   padding-top: 2.5rem;
+  overflow-x: auto;
 }
 
 .timeline-step {
@@ -54,7 +56,8 @@
   flex-direction: column;
   align-items: center;
   position: relative;
-  width: 25%;
+  flex: 1;
+  min-width: 100px;
 }
 
 .timeline-step::before {
@@ -92,65 +95,7 @@
   text-align: center;
 }
 
-.order-products {
-  margin-bottom: 2rem;
-}
-
-.order-product-item {
-  display: flex;
-  margin-bottom: 1rem;
-  gap: 1rem;
-  background-color: #e3e2e2;
-  border-radius: 0.5rem;
-  padding: 1rem;
-}
-
-.product-img {
-  width: 80px;
-  height: 80px;
-  object-fit: cover;
-  border-radius: 0.5rem;
-
-}
-
-.product-info {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  font-size: 0.9rem;
-  color: #374151;
-  text-align: left;
-  margin-left: 1.5rem;
-  animation: fadeInUp 0.6s ease;
-}
-
-.name {
-  font-weight: 600;
-  margin-bottom: 0.25rem;
-}
-
-.order-summary {
-  background-color: #ffffff;
-  padding: 1rem;
-  border-radius: 0.5rem;
-  margin-bottom: 2rem;
-}
-
-.summary-line {
-  display: flex;
-  justify-content: space-between;
-  font-size: 1rem;
-  margin-bottom: 0.5rem;
-}
-
-.price-details p {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.9rem;
-  margin: 0.25rem 0;
-}
-
+/* ---------- Thông tin người nhận ---------- */
 .order-customer {
   margin-bottom: 2rem;
 }
@@ -163,12 +108,11 @@
 }
 
 .order-details-content p {
-    margin-bottom: 0.5rem;
-    font-size: 0.95rem;
-    color: #1f2937;
-    text-align: left;
-    margin-left: 30px;
-
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+  color: #1f2937;
+  text-align: left;
+  margin-left: 30px;
 }
 
 .order-detail-label {
@@ -176,6 +120,79 @@
   margin-right: 0.25rem;
 }
 
+/* ---------- Danh sách sản phẩm ---------- */
+.order-products {
+  margin-bottom: 2rem;
+}
+
+.order-product-item {
+  display: flex;
+  gap: 1.5rem;
+  background-color: #f9f9f9;
+  border-radius: 0.75rem;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.product-img {
+  width: 150px;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 0.5rem;
+  flex-shrink: 0;
+}
+
+.product-info {
+  flex: 1;
+  flex-direction: column;
+  font-size: 0.9rem;
+  color: #374151;
+  text-align: left;
+}
+
+
+.name {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+/* ---------- Tóm tắt đơn hàng ---------- */
+.order-summary {
+  background-color: #ffffff;
+  padding: 1rem 1.5rem;
+  border-radius: 0.5rem;
+  margin-bottom: 2rem;
+  border: 1px solid #e5e7eb;
+}
+
+.order-summary h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #1f2937;
+}
+
+.order-summary p {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+  border-bottom: 1px dashed #d1d5db;
+  padding-bottom: 0.25rem;
+}
+
+.order-summary p:last-child {
+  border-bottom: none;
+}
+
+.order-detail-label {
+  font-weight: 500;
+  color: #111827;
+}
+
+/* ---------- Nút hành động ---------- */
 .order-actions {
   text-align: center;
 }
@@ -202,6 +219,7 @@
   margin-top: 0.5rem;
 }
 
+/* ---------- Thông báo lỗi ---------- */
 .order-error {
   background-color: #fee2e2;
   border: 1px solid #fecaca;
@@ -216,6 +234,7 @@
   margin-bottom: 1rem;
 }
 
+/* ---------- Animation ---------- */
 @keyframes fadeInUp {
   from {
     opacity: 0;
@@ -224,5 +243,49 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 768px) {
+  .order-product-item {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .product-img {
+    width: 100px;
+    height: 100px;
+  }
+
+  .product-info {
+    align-items: center;
+    margin-top: 1rem;
+  }
+
+  .order-summary p {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .order-summary p span:last-child {
+    margin-top: 0.2rem;
+    font-weight: 600;
+  }
+
+  .order-details-content p {
+    margin-left: 0;
+  }
+}
+/* ---------- Animation cho ảnh sản phẩm ---------- */
+@keyframes fadeInUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
   }
 }

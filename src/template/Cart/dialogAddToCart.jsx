@@ -5,15 +5,17 @@ import { addToCart, getMaBienThe, getCartItems, updateCartItemQuantity } from '.
 import { getBienTheTheoMaSP } from '../../api/chiTietSanPhamApi';
 import './dialogAddToCart.css';
 import { useNavigate } from 'react-router-dom';
+import { useCart } from './CartContext';
 
 
-const DialogAddToCart = ({ sanPham, onClose, fetchCartData, setCartUpdateTrigger}) => {
+const DialogAddToCart = ({ sanPham, onClose, fetchCartData: fetchCartDataProp, setCartUpdateTrigger}) => {
   const [bienThes, setBienThes] = useState([]);
   const [selectedColor, setSelectedColor] = useState('');
   const [selectedSize, setSelectedSize] = useState('');
   const [selectedVariant, setSelectedVariant] = useState(null);
   const [selectedImageUrl, setSelectedImageUrl] = useState('');
   const [soLuong, setSoLuong] = useState(1);
+  const { fetchCartData: fetchCartDataContext } = useCart();
 
   const navigate = useNavigate();
   const [maKhachHang1, setMaKhachHang] = useState('');
@@ -86,79 +88,36 @@ useEffect(() => {
   try {
     const khachHangStr = localStorage.getItem('khachHang');
     const khachHang = khachHangStr ? JSON.parse(khachHangStr) : null;
-   if (!khachHang) {
+    if (!khachHang) {
       toast.warning("Vui lòng đăng nhập để mua hàng");
       return;
     }
+
     if (!selectedColor || !selectedSize || !selectedVariant) {
       toast.warning('Vui lòng chọn đầy đủ màu sắc và kích thước!');
       return;
     }
-
-
-    // Lấy giỏ hàng hiện có của khách hàng
-    let carts = await getGioHangByKhachHang(khachHang.maKH);
-
-    // Lọc ra giỏ hàng đang hoạt động (trangThai === 1)
-    if (Array.isArray(carts)) {
-      carts = carts.filter(c => c.trangThai === 1);
-    } else if (carts && carts.trangThai === 1) {
-      carts = [carts];
-    } else {
-      carts = [];
-    }
-
-    let cart = carts.length > 0 ? carts[0] : null;
-
-    // Nếu không có giỏ hàng thì tạo mới
-    if (!cart || !cart.maGioHang) {
-      const randomMaGioHang = generateRandomMaGioHang();
-      const now = new Date().toISOString();
-
-      const newCart = {
-        maGioHang: randomMaGioHang,
-        maKH: khachHang.maKH,
-        ngayTao: now,
-        ngayCapNhat: now,
-        trangThai: 1,
-      };
-
-      await createGioHang(newCart);
-      cart = newCart; // dùng luôn cái mới tạo này
-    }
-
-    // Lấy danh sách chi tiết giỏ hàng
-    const res = await getCartItems(cart.maGioHang);
-const cartItems = Array.isArray(res) ? res : res.data || [];
-    const existingItem = cartItems.find(item => item.maBienThe === selectedVariant.maBienThe);
-
-    if (existingItem) {
-      // Nếu đã có sản phẩm trong giỏ, cập nhật số lượng
-      const newQuantity = existingItem.soLuong + soLuong;
-      await updateCartItemQuantity({
-        maGioHang: cart.maGioHang,
-        maBienThe: selectedVariant.maBienThe,
-        soLuong: newQuantity,
-      });
-    } else {
-      // Nếu chưa có thì thêm mới sản phẩm vào giỏ hàng
-      await addToCart({
-        maKhachHang: khachHang.maKH,
-        maBienThe: selectedVariant.maBienThe,
-        soLuong,
-      });
-    }
-
-    if (fetchCartData) {
-  await fetchCartData();
+    if (soLuong > selectedVariant.tonKho) {
+  toast.warning(`Số lượng vượt quá tồn kho (${selectedVariant.tonKho})`);
+  return;
 }
-if (setCartUpdateTrigger) {
-  setCartUpdateTrigger(prev => prev + 1); 
-}
-const updatedCartItems = await getCartItems(cart.maGioHang);
-// Gán vào state hoặc làm gì đó với kết quả nếu cần
-console.log('Cập nhật giỏ hàng mới:', updatedCartItems);
 
+
+    await addToCart({
+      maKH: khachHang.maKH,
+      maBienThe: selectedVariant.maBienThe,
+      soLuong,
+    });
+
+    if (fetchCartDataContext) {
+      await fetchCartDataContext();
+    } else if (fetchCartDataProp) {
+      await fetchCartDataProp();
+    }
+
+    if (setCartUpdateTrigger) {
+      setCartUpdateTrigger(prev => prev + 1);
+    }
 
     toast.success('Thêm vào giỏ hàng thành công!');
     onClose();
@@ -167,6 +126,7 @@ console.log('Cập nhật giỏ hàng mới:', updatedCartItems);
     toast.error(error.message || 'Không thể thêm vào giỏ hàng!');
   }
 };
+
 
 
 

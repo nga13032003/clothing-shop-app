@@ -24,6 +24,7 @@ import OrderSuccessPage from './template/CheckOut/OrderSuccessPage';
 import ChiTietDonHang from './template/CheckOut/ChiTietDonHang';
 import MyProfile from './template/Auth/myProfile';
 import ResetPassword from './template/Auth/resetPassword';
+import MyOrder from './template/CheckOut/MyOrder';
 
 
 const root = createRoot(document.getElementById('root'));
@@ -49,9 +50,10 @@ root.render(
           <Route path="/news" element={<App><NewsPage /></App>} />
           <Route path='/cart-item' element={<App><CartPage/></App>}/>
           <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path='/don-hang-cua-toi' element={<App><OrderSuccessPage/></App>}/>
-          <Route path='/chi-tiet-don-hang' element={<App><ChiTietDonHang/></App>}/>
+          <Route path='/don-hang-cua-toi/:maHD' element={<App><OrderSuccessPage /></App>} />
+          <Route path='/chi-tiet-don-hang/:maHoaDon' element={<App><ChiTietDonHang/></App>}/>
           <Route path='/my-account' element={<App><MyProfile/></App>}/>
+          <Route path='/my-orders' element={<App><MyOrder/></App>}/>
             
         </Routes>
       </BrowserRouter>
