@@ -28,7 +28,7 @@ const ChiTietDonHang = () => {
 
   const [orderStatus, setOrderStatus] = useState([
     { status: 'Chờ xác nhận', key: 'Chờ xác nhận', icon: <ClockCircleOutlined />, active: false, timestamp: null },
-    { status: 'Đang lấy hàng', key: 'Chờ lấy hàng', icon: <TruckOutlined />, active: false, timestamp: null },
+    { status: 'Đang lấy hàng', key: 'Đang lấy hàng', icon: <TruckOutlined />, active: false, timestamp: null },
     { status: 'Đang giao hàng', key: 'Đang giao hàng', icon: <TruckOutlined />, active: false, timestamp: null },
     { status: 'Đã giao hàng', key: 'Đã giao hàng', icon: <FileDoneOutlined />, active: false, timestamp: null },
     { status: 'Giao thất bại', key: 'Giao thất bại', icon: <FileDoneOutlined />, active: false, timestamp: null },
