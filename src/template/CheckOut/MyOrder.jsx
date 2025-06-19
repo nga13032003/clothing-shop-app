@@ -5,21 +5,22 @@ import { getChiTietHoaDonTheoMaHD } from '../../api/apiCheckOut';
 import { getBienTheSanPhamById } from '../../api/chiTietSanPhamApi';
 import { getSanPhamById } from '../../api/apiSanPham';
 
+
 const TABS = [
   'Tất cả',
   'Chờ xác nhận',
-  'Chờ lấy hàng',
-  'Chờ giao hàng',
-  'Đã giao',
+  'Đang lấy hàng',
+  'Đang giao hàng',
+  'Đã giao hàng',
   'Đổi hàng'
 ];
 
 const getStatusClass = (status) => {
   const map = {
     'Chờ xác nhận': 'pending',
-    'Chờ lấy hàng': 'pickup',
-    'Chờ giao hàng': 'shipping',
-    'Đã giao': 'delivered',
+    'Đang lấy hàng': 'pickup',
+    'Đang giao hàng': 'shipping',
+    'Đã giao hàng': 'delivered',
     'Đổi hàng': 'returned',
   };
   return map[status] || 'default';
@@ -33,6 +34,8 @@ const MyOrder = () => {
   const [bienTheData, setBienTheData] = useState({});
   const [sanPhamData, setSanPhamData] = useState({});
   const [expandedOrders, setExpandedOrders] = useState({});
+
+
 
   useEffect(() => {
     fetch('https://localhost:7265/api/HoaDon')
@@ -175,7 +178,7 @@ const MyOrder = () => {
                     >
                       Xem chi tiết
                     </button>
-                    {order.trangThai_VanChuyen === 'Đã giao' && isWithin7Days(order.ngayGiao) && (
+                    {order.trangThai_VanChuyen === 'Đã giao hàng' && isWithin7Days(order.ngayGiao) && (
                       <>
                         <button
                           className="review-btn"
