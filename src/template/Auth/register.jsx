@@ -71,7 +71,6 @@ const Register = () => {
         matKhau: values.password,
         email: values.email,
         soDienThoai: values.phone,
-        diaChi: '',
         maLoaiKH: "KHM"
       };
     }

@@ -73,9 +73,10 @@ const adminApp = (
     <ToastContainer position="top-center" autoClose={2000} theme="colored" />
     <Routes>
       <Route path="/" element={<LoginAdmin />} />
+      <Route path="/home" element={<AdminDashboard />} />
       <Route path="/verify-otp" element={<AdminOtp />} />
-      <Route path="/product-management" element={<ProductManagement />} />
-      <Route path="/category-management" element={<LoaiSanPhamManagement />} />
+      <Route path="/product-management" element={<AdminDashboard><ProductManagement /></AdminDashboard>} />
+      <Route path="/category-management" element={<AdminDashboard><LoaiSanPhamManagement /></AdminDashboard>} />
     </Routes>
   </BrowserRouter>
 );

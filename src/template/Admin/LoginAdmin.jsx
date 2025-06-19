@@ -18,10 +18,11 @@ const LoginAdmin = () => {
       const adminData = await loginAdmin(values.username, values.password);
 
       toast.success('Đăng nhập thành công!');
+            navigate('/home');
       
       // Lưu tạm thông tin để xác thực OTP
-      localStorage.setItem('pendingAdminLogin', JSON.stringify(adminData));
-        navigate('/verify-otp');
+    //   localStorage.setItem('pendingAdminLogin', JSON.stringify(adminData));
+    //     navigate('/product-management');
 
     } catch (error) {
       toast.error(error.message || 'Đăng nhập admin thất bại');
